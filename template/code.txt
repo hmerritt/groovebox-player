@@ -1,0 +1,17 @@
+
+--  Run icecast  -- 
+
+sudo docker run -p 7400:7400 -v /home/radio/icecast.xml:/etc/icecast2/icecast.xml moul/icecast
+
+
+
+--  Run liquidsoap  --
+
+liquidsoap /etc/liquidsoap/disco.liq
+liquidsoap /etc/liquidsoap/60s.liq
+
+
+
+--  List directory path into a file (used for creating playlist files)  --
+
+ls -d "$PWD"/* > playlist.txt
