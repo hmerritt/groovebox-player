@@ -31,6 +31,7 @@
 
     <!--  scripts  -->
     <script src="js/libs/jquery.js" type="text/javascript"></script>
+    <script src="js/libs/oscilloscope.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
 
 </head>
@@ -67,6 +68,9 @@
                         </p>
                     </div>
                 </div>
+            </div>
+            <div class="oscilloscope">
+                <canvas id="canvas" width="1200px" height="300"></canvas>
             </div>
         </div>
     </div>

@@ -196,6 +196,21 @@ header.title h1 {
 
 
 
+/*  oscilloscope  */
+
+.oscilloscope {
+  position: absolute;
+  top: 220px;
+  z-index: -1;
+}
+
+audio {
+  opacity: 0;
+}
+
+
+
+
 /*  track info  */
 
 .track-info {
