@@ -249,7 +249,13 @@ header.title h1 {
 
 
 .volume .volume-text {
+  font-size: .94em;
   text-align: center;
   opacity: .5;
   font-weight: bold;
+}
+
+.volume .volume-text span {
+  vertical-align: sub;
+  margin-right: 8px;
 }
