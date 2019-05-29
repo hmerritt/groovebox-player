@@ -209,6 +209,19 @@ audio {
 }
 
 
+.oscilloscope canvas {
+  width: 1200px;
+  height: 300px;
+}
+
+
+@media (max-width: 1270px) {
+  .container {
+    width: 1170px;
+  }
+}
+
+
 
 
 /*  track info  */
@@ -257,9 +270,14 @@ audio {
   position: absolute;
   top: 0;
   left: 0;
-  width: 70%;
+  width: 0%;
   height: 100%;
   background-color: #A0FF5B;
+  -webkit-transition: all 80ms ease;
+     -moz-transition: all 80ms ease;
+      -ms-transition: all 80ms ease;
+       -o-transition: all 80ms ease;
+          transition: all 80ms ease;
 }
 
 
@@ -267,7 +285,6 @@ audio {
   font-size: .94em;
   text-align: center;
   opacity: .5;
-  font-weight: bold;
 }
 
 .volume .volume-text span {
