@@ -1,4 +1,7 @@
 
+/*  styles  */
+
+
 html, body {
   text-rendering: optimizeLegibility;
   font-smooth: always;
@@ -24,6 +27,18 @@ a:visited,
 a:target {
   color: inherit !important;
   text-decoration: inherit !important;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+  margin: 0;
+  padding: 0;
+  color: #222;
 }
 
 
@@ -95,8 +110,7 @@ a:target {
 
 /*  container  */
 
-.container,
-.container-small {
+.container {
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
@@ -119,6 +133,54 @@ a:target {
   }
 }
 
+
 .container-small {
   width: 500px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (max-width: 555px) {
+  .container-small {
+    width: 100%;
+  }
+}
+
+
+
+
+/*  header  */
+
+header {
+  margin-top: 60px;
+  margin-bottom: 80px;
+}
+
+
+header h1 {
+  font-family: 'Product sans', 'arial', sans-serif;
+  text-align: center;
+  font-weight: normal;
+  cursor: default;
+}
+
+
+
+
+/*  album art  */
+
+
+.album-art {
+  position: relative;
+  margin: 0 auto;
+  width: 400px;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: 0px 0px 40px 0px rgba(0,0,0, 0.5);
+}
+
+
+.album-art img {
+  width: 100%;
 }

@@ -41,9 +41,13 @@
 
     <div class="content">
         <div class="container">
-            hello world
-            <div class="container-small" style="background: red;">
-                hello world
+            <div class="container-small">
+                <header>
+                    <h1>Groovebox <strong>Disco</strong></h1>
+                </header>
+                <div class="album-art">
+                    <img src="img/cover.jpg" alt="Album Art">
+                </div>
             </div>
         </div>
     </div>
