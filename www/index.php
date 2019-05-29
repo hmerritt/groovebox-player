@@ -42,11 +42,26 @@
     <div class="content">
         <div class="container">
             <div class="container-small">
-                <header>
-                    <h1>Groovebox <strong>Disco</strong></h1>
+                <header class="title">
+                    <h1 class="overflow-ellipsis">Groovebox <strong>Disco</strong></h1>
                 </header>
-                <div class="album-art">
-                    <img src="img/cover.jpg" alt="Album Art">
+                <div class="album-art no-user-select">
+                    <img src="img/cover.jpg" alt="Album Art" draggable="false">
+                </div>
+                <div class="track-info">
+                    <h2 class="track-name overflow-ellipsis" title="Don't leave me now">Don't leave me now</h2>
+                    <h3 class="track-artist overflow-ellipsis" title="Madleen Kane">Madleen Kane</h3>
+                </div>
+                <div class="volume no-user-select">
+                    <div class="volume-bar">
+                        <div class="volume-bar-percentage"></div>
+                    </div>
+                    <div class="volume-text">
+                        <p>
+                            <span></span>
+                            70%
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
