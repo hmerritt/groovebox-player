@@ -38,6 +38,28 @@ $(document).ready(function()
 
 
 
+    /*  playback  */
+
+
+    //  stop/start music playback
+    function togglePlayback()
+    {
+
+        //  check if audio is playing
+        if (!audioElement.paused)
+        {
+            audioElement.pause();
+        } else
+        {
+            audioElement.play();
+        }
+
+    }
+
+
+
+
+
     /*  volume  */
 
 
@@ -100,25 +122,41 @@ $(document).ready(function()
 
 
     //  detect user keypress
-    $('body').keypress(function(e)
+    $('body').keydown(function(e)
     {
 
         switch (e.which)
         {
 
-            //  plus key
-            case 61:
+            //  space key
+            case 32:
+                e.preventDefault();
+                togglePlayback();
+                break;
+
+            //  plus,
+            //  up-arrow,
+            //  right-arrow key
+            case 187:
+            case 38:
+            case 39:
+                e.preventDefault();
                 changeVolume("up");
                 break;
 
-            //  plus key
-            case 45:
+            //  minus,
+            //  down-arrow,
+            //  left-arrow key
+            case 189:
+            case 40:
+            case 37:
+                e.preventDefault();
                 changeVolume("down");
                 break;
 
         }
 
-        //console.log(e.which);
+        console.log(e.which);
 
     });
 
