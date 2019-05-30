@@ -14,16 +14,19 @@ $(document).ready(function()
     //  create an audio stream container
     var audioContext = new window.AudioContext();
 
+
     //  setup audio element
     //  add it into the dom
-    var audioElement = document.createElement('audio');
+    var audioElement = document.createElement("audio");
                       audioElement.controls = true;
                       audioElement.autoplay = true;
-                      audioElement.src = 'test.mp3';
+                      audioElement.src = "https://merritt.es/radio/60s";
                       document.body.appendChild(audioElement);
+
 
     //  create source from html5 audio element
     var source = audioContext.createMediaElementSource(audioElement);
+
 
     //  attach oscilloscope
     var scope = new Oscilloscope(source);
@@ -31,8 +34,28 @@ $(document).ready(function()
     //  start default animation loop
     scope.animate(canvas.getContext("2d"));
 
+
     //  reconnect audio output to speakers
     source.connect(audioContext.destination);
+
+
+
+
+
+    /*  icecast metadata - service worker  */
+
+    //  initialise
+    navigator.serviceWorker.register('js/libs/metadata-worker.js');
+
+
+    navigator.serviceWorker.addEventListener('message', event => {
+        if(event.origin != 'https://merritt.es'){
+            return;
+        }
+        var meta = event.data.msg;
+        meta = meta.substring(meta.indexOf("'") + 1,meta.lastIndexOf("'"));
+        console.log(meta);
+    });
 
 
 
@@ -109,6 +132,17 @@ $(document).ready(function()
         var volumePercentage = (getVolume() * 100).toFixed(0);
         $(".volume .volume-bar-percentage").css({"width": volumePercentage + "%"});
         $(".volume .volume-text strong").text(volumePercentage+ " %");
+
+        //  set bar color
+        if (getVolume() > 0.75)
+        {
+            $(".volume").removeClass("green yellow red").addClass("green");
+        } else if (getVolume() > 0.25) {
+            $(".volume").removeClass("green yellow red").addClass("yellow");
+        } else {
+            $(".volume").removeClass("green yellow red").addClass("red");
+        }
+
 
         //  log action
         console.log("[volume] "+ action + ": "+ getVolume());

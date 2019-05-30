@@ -1,9 +1,6 @@
 <?php
 
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 
 //  check for url vars
 if (!isset($_GET["stream"]) || !isset($_GET["track"]))

@@ -281,6 +281,27 @@ audio {
           transition: all 80ms ease;
 }
 
+.volume.green .volume-bar {
+  border: 1px solid #A0FF5B;
+}
+.volume.green .volume-bar-percentage {
+  background-color: #A0FF5B;
+}
+
+.volume.yellow .volume-bar {
+  border: 1px solid #DFE100;
+}
+.volume.yellow .volume-bar-percentage {
+  background-color: #DFE100;
+}
+
+.volume.red .volume-bar {
+  border: 1px solid #CA3432;
+}
+.volume.red .volume-bar-percentage {
+  background-color: #CA3432;
+}
+
 
 .volume .volume-text {
   font-size: .94em;
