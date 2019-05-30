@@ -51,7 +51,7 @@
 
                 <!--  album art  -->
                 <div class="album-art no-user-select">
-                    <img src="img/cover.jpg" alt="Album Art" draggable="false">
+                    <img src="img/example-cover.jpg" alt="Album Art" draggable="false">
                 </div>
 
                 <!--  track information  -->
