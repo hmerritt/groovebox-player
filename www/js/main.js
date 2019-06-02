@@ -21,16 +21,16 @@ $(document).ready(function()
 
     //  setup audio element
     //  set volume to 50%
-    var audioElement = new Audio("https://merritt.es/radio/stream/disco");
-        audioElement.volume = 0.5;
-        audioElement.setAttribute("type", "audio/mpeg");
-        audioElement.setAttribute("preload", "none");
-        audioElement.setAttribute("crossorigin", "anonymous");
-        audioElement.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
+    var audio = new Audio("https://merritt.es/radio/stream/disco");
+        audio.volume = 0.5;
+        audio.setAttribute("type", "audio/mpeg");
+        audio.setAttribute("preload", "none");
+        audio.setAttribute("crossorigin", "anonymous");
+        audio.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
 
 
     // attempt to play the audio
-    var playPromise = audioElement.play();
+    var playPromise = audio.play();
 
     //  catch error if the audio fails to start
     if (playPromise !== undefined)
@@ -38,14 +38,90 @@ $(document).ready(function()
         playPromise.then(_ => {
           // Automatic playback started!
           // Show playing UI.
+          setControlsIcon("pause");
           console.log("[Audio] Auto-play started successfully!");
         })
         .catch(error => {
             // Auto-play was prevented
             // Show paused UI.
+            toggleControls("play");
             console.error("[Audio] Auto-play was prevented ("+ error +")");
         });
     }
+
+
+
+
+
+    /*  audio state (play/pause)  */
+
+
+    //  stop/start music playback
+    function togglePlayback()
+    {
+
+        //  check if audio is playing
+        if (!audio.paused)
+        {
+            audio.pause();
+            setControlsIcon("play");
+        } else
+        {
+            audio.play();
+            setControlsIcon("pause");
+        }
+
+    }
+
+
+    //  set audio controls icon
+    function setControlsIcon(icon)
+    {
+
+        //  check for which icon
+        if (icon == "play")
+        {
+            $(".audio-controls svg").addClass("hidden");
+            $(".audio-controls svg.icon-play").removeClass("hidden");
+        } else if (icon == "pause")
+        {
+            $(".audio-controls svg").addClass("hidden");
+            $(".audio-controls svg.icon-pause").removeClass("hidden");
+        }
+
+    }
+
+
+    //  toggle audio controls within the album cover
+    function toggleControls(icon)
+    {
+
+        //  check if audio controls is already hidden
+        if ($(".audio-controls").hasClass("hidden"))
+        {
+
+            //  change icon within audi controls
+            setControlsIcon(icon);
+
+            //  show audio controls
+            $(".audio-controls").removeClass("hidden");
+
+        } else {
+
+            //  hide audio controls
+            $(".audio-controls").addClass("hidden");
+
+        }
+
+    }
+
+
+    $(document).on("click", ".audio-controls", function()
+    {
+
+        togglePlayback();
+
+    });
 
 
 
@@ -55,7 +131,7 @@ $(document).ready(function()
 
 
     //  create source from html5 audio element
-    var source = audioContext.createMediaElementSource(audioElement);
+    var source = audioContext.createMediaElementSource(audio);
 
 
     //  attach oscilloscope
@@ -92,35 +168,13 @@ $(document).ready(function()
 
 
 
-    /*  playback  */
-
-
-    //  stop/start music playback
-    function togglePlayback()
-    {
-
-        //  check if audio is playing
-        if (!audioElement.paused)
-        {
-            audioElement.pause();
-        } else
-        {
-            audioElement.play();
-        }
-
-    }
-
-
-
-
-
     /*  volume  */
 
 
     //  return the current volume
     function getVolume()
     {
-        return audioElement.volume;
+        return audio.volume;
     }
 
 
@@ -169,8 +223,8 @@ $(document).ready(function()
             //  do nothing if already max volume
             if (currentVolume < 1)
             {
-                newVolume = audioElement.volume += 0.05;
-                audioElement.volume = newVolume.toFixed(2);
+                newVolume = audio.volume += 0.05;
+                audio.volume = newVolume.toFixed(2);
             }
 
         //  turn volume down
@@ -180,8 +234,8 @@ $(document).ready(function()
             //  do nothing if muted
             if (currentVolume !== 0)
             {
-                newVolume = audioElement.volume -= 0.05;
-                audioElement.volume = newVolume.toFixed(2);
+                newVolume = audio.volume -= 0.05;
+                audio.volume = newVolume.toFixed(2);
             }
 
         }

@@ -52,6 +52,16 @@
                 <!--  album art  -->
                 <div class="album-art no-user-select">
                     <img src="img/example-cover.jpg" alt="Album Art" draggable="false">
+
+                    <!--  play/pause btn  -->
+                    <div class="audio-controls hidden flex">
+                        <svg class="icon-play hidden" viewBox="0 0 24 24">
+                            <path d="M8,5.14V19.14L19,12.14L8,5.14Z" />
+                        </svg>
+                        <svg class="icon-pause" viewBox="0 0 24 24">
+                            <path d="M14,19H18V5H14M6,19H10V5H6V19Z" />
+                        </svg>
+                    </div>
                 </div>
 
                 <!--  track information  -->
