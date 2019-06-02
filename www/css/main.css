@@ -257,6 +257,11 @@ audio {
 
 /*  volume  */
 
+
+.volume {
+  margin-bottom: 80px;
+}
+
 .volume .volume-bar {
   position: relative;
   width: 100%;

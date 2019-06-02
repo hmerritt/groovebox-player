@@ -11,19 +11,22 @@ $(document).ready(function()
     /*  audio  */
 
 
+    //  log action
+    console.log("[Audio] Attempting to start audio");
+
+
     //  create an audio stream container
     var audioContext = new window.AudioContext();
 
 
     //  setup audio element
-    //  add it into the dom
-    var audioElement = document.createElement("audio");
-        audioElement.controls = true;
-        audioElement.src = "https://merritt.es/radio/stream/disco";
+    //  set volume to 50%
+    var audioElement = new Audio("https://merritt.es/radio/stream/disco");
+        audioElement.volume = 0.5;
         audioElement.setAttribute("type", "audio/mpeg");
+        audioElement.setAttribute("preload", "none");
         audioElement.setAttribute("crossorigin", "anonymous");
         audioElement.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
-        document.body.appendChild(audioElement);
 
 
     // attempt to play the audio
@@ -35,12 +38,12 @@ $(document).ready(function()
         playPromise.then(_ => {
           // Automatic playback started!
           // Show playing UI.
-          console.log("[audio] auto-play started successfully!");
+          console.log("[Audio] Auto-play started successfully!");
         })
         .catch(error => {
             // Auto-play was prevented
             // Show paused UI.
-            console.error("[audio] auto-play was prevented ("+ error +")");
+            console.error("[Audio] Auto-play was prevented ("+ error +")");
         });
     }
 
@@ -121,6 +124,34 @@ $(document).ready(function()
     }
 
 
+    //  update volume percentage bar
+    function updateVolumeBar()
+    {
+
+        //  get volume percentage as a whole number
+        var volumePercentage = (getVolume() * 100).toFixed(0);
+
+        //  apply percentage to the width of volume bar
+        //  update text below bar to match percentage
+        $(".volume .volume-bar-percentage").css({"width": volumePercentage + "%"});
+        $(".volume .volume-text strong").text(volumePercentage+ " %");
+
+        //  set bar color
+        if (getVolume() > 0.75)
+        {
+            $(".volume").removeClass("green yellow red").addClass("green");
+        } else if (getVolume() > 0.25) {
+            $(".volume").removeClass("green yellow red").addClass("yellow");
+        } else {
+            $(".volume").removeClass("green yellow red").addClass("red");
+        }
+
+    }
+
+    //  update volume bar on page-load
+    updateVolumeBar();
+
+
     //  change the volume
     //  up or down
     //  half a point (0.5)
@@ -156,24 +187,11 @@ $(document).ready(function()
         }
 
 
-        //  update volume percentage bar
-        var volumePercentage = (getVolume() * 100).toFixed(0);
-        $(".volume .volume-bar-percentage").css({"width": volumePercentage + "%"});
-        $(".volume .volume-text strong").text(volumePercentage+ " %");
-
-        //  set bar color
-        if (getVolume() > 0.75)
-        {
-            $(".volume").removeClass("green yellow red").addClass("green");
-        } else if (getVolume() > 0.25) {
-            $(".volume").removeClass("green yellow red").addClass("yellow");
-        } else {
-            $(".volume").removeClass("green yellow red").addClass("red");
-        }
+        updateVolumeBar();
 
 
         //  log action
-        console.log("[volume] "+ action + ": "+ getVolume());
+        //console.log("[Volume] "+ action + ": "+ getVolume());
 
     }
 
