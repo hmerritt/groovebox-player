@@ -8,7 +8,7 @@ $(document).ready(function()
 
 
 
-    /*  oscilloscope  */
+    /*  audio  */
 
 
     //  create an audio stream container
@@ -18,10 +18,37 @@ $(document).ready(function()
     //  setup audio element
     //  add it into the dom
     var audioElement = document.createElement("audio");
-                      audioElement.controls = true;
-                      audioElement.autoplay = true;
-                      audioElement.src = "https://merritt.es/radio/60s";
-                      document.body.appendChild(audioElement);
+        audioElement.controls = true;
+        audioElement.src = "https://merritt.es/radio/stream/disco";
+        audioElement.setAttribute("type", "audio/mpeg");
+        audioElement.setAttribute("crossorigin", "anonymous");
+        audioElement.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
+        document.body.appendChild(audioElement);
+
+
+    // attempt to play the audio
+    var playPromise = audioElement.play();
+
+    //  catch error if the audio fails to start
+    if (playPromise !== undefined)
+    {
+        playPromise.then(_ => {
+          // Automatic playback started!
+          // Show playing UI.
+          console.log("[audio] auto-play started successfully!");
+        })
+        .catch(error => {
+            // Auto-play was prevented
+            // Show paused UI.
+            console.error("[audio] auto-play was prevented ("+ error +")");
+        });
+    }
+
+
+
+
+
+    /*  oscilloscope  */
 
 
     //  create source from html5 audio element
@@ -49,8 +76,9 @@ $(document).ready(function()
 
 
     navigator.serviceWorker.addEventListener('message', event => {
-        if(event.origin != 'https://merritt.es'){
-            return;
+        console.log(event);
+        if (event.origin != 'https://merritt.es') {
+            //return;
         }
         var meta = event.data.msg;
         meta = meta.substring(meta.indexOf("'") + 1,meta.lastIndexOf("'"));
@@ -190,7 +218,7 @@ $(document).ready(function()
 
         }
 
-        console.log(e.which);
+        //console.log(e.which);
 
     });
 

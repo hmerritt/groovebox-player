@@ -65,8 +65,9 @@ self.addEventListener('activate', event => {
     clients.claim();
 });
 self.addEventListener('message', event => {
-    if(event.origin != playerOrigin){
-        return;
+    console.log(event);
+    if (event.origin != playerOrigin) {
+        //return;
     }
     fetchSignal = 1;
 });
