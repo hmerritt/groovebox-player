@@ -2,6 +2,9 @@
 A self-hosted internet radio solution using [`moul/icecast`](https://github.com/moul/docker-icecast) and [`liquidsoap`](https://www.liquidsoap.info/) which connects to a front-end `UI` for consumption.
 
 
+![Gif of radio client](template/example.gif)
+
+
 ## How To Install
 
 ### Prerequisites
