@@ -3,7 +3,8 @@
 
 
 /*
-
+  https://github.com/Hmerritt/internet-radio
+  
   This is the main settings file for the internet-radio
 
 */
@@ -19,7 +20,7 @@ $settings = [
     //  domain-name or host that icecast is running from
     //  e.g. example.com if running on a remote server
     //  or   localhost
-    "icecast_host" => "localhost",
+    "icecast_host" => "harrymerritt.me",
 
 
 
@@ -32,6 +33,13 @@ $settings = [
 
 
 ];
+
+
+
+
+//  hide all errors
+//error_reporting(0);
+//ini_set('display_errors', 0);
 
 
 

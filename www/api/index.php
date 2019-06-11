@@ -6,10 +6,12 @@
 
 /*
 
+  https://github.com/Hmerritt/internet-radio
+
   This api file acts as the main gateway for all of the internet-radio's
   functions. Example usage;
 
-  /radio/api/?medadata&mount=disco
+  /radio/api/?metadata&mount=disco
   /radio/api/?stream&mount=disco
 
 */
@@ -135,22 +137,40 @@ function full_status_code($status)
 
 
 
+//  create a standard resonse in json format
+//  http status code + content
+function response_json($status, $content)
+{
+
+
+    //  create response var
+    return [
+        "status" => full_status_code($status),
+        "content" => $content
+    ];
+
+
+}
+
+
+
+
+
 //  send error msg to user
 //  stop script
 function return_error($status, $reason, $msg)
 {
 
 
-    //  create response text
-    $response = [
-        "status" => full_status_code($status),
+    //  create content text
+    $content = [
         "reason" => $reason,
         "msg" => $msg
     ];
 
 
     //  stop script and return the error
-    die(json_encode($response));
+    die(json_encode(response_json($status, $content)));
 
 
 }
@@ -165,9 +185,52 @@ if (empty($_GET))
 
     //  no url parameters set
     //  throw error and stop the script
-    return_error("400", "no_url_params", "no url parameters set. example; ?medadata&mount=disco");
+    return_error("400", "no_url_params", "no url parameters set. example; ?metadata&mount=disco");
 
 }
+
+
+
+
+
+//  check for the existance of valid url params
+//  if metadata param exists
+if (isset($_GET["metadata"]))
+{
+
+
+    //  import the metadata class
+    require "libs/metadata.php";
+
+
+    //  init Metadata class
+    $metadata = new Metadata();
+
+
+
+
+    //  check if 'mount' param exists
+    if (!isset($_GET["mount"]))
+    {
+
+
+        header('Content-Type: application/json');
+        die(json_encode($metadata->everything()));
+
+
+    } else
+    {
+
+
+        header('Content-Type: application/json');
+        die(json_encode($metadata->mount($_GET["mount"])));
+
+
+    }
+
+
+}
+
 
 
 
