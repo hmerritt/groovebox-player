@@ -50,7 +50,7 @@ $(document).ready(function()
 
     //  setup audio element
     //  set volume to 50%
-    var audio = new Audio("https://merritt.es/radio/stream/60s");
+    var audio = new Audio("../api/?stream&mount=60s"); // https://merritt.es/radio/stream/60s
         audio.volume = 0.5;
         audio.setAttribute("type", "audio/mpeg");
         audio.setAttribute("preload", "none");
