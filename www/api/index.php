@@ -207,24 +207,53 @@ if (isset($_GET["metadata"]))
     $metadata = new Metadata();
 
 
+    //  set json header - expect a json response
+    header("Content-Type: application/json");
+
+
 
 
     //  check if 'mount' param exists
     if (!isset($_GET["mount"]))
     {
 
-
-        header('Content-Type: application/json');
+        //  get all metadata
         die(json_encode($metadata->everything()));
-
 
     } else
     {
 
-
-        header('Content-Type: application/json');
+        //  get mount specific metadata
         die(json_encode($metadata->mount($_GET["mount"])));
 
+    }
+
+
+}
+
+
+
+
+
+//  if stream param exists
+if (isset($_GET["stream"]))
+{
+
+
+    //  check for mount param
+    if (isset($_GET["mount"]))
+    {
+
+        // set URL and other appropriate options
+        header("Location: http://". $settings["icecast_host"] .":". $settings["icecast_port"] ."/". $_GET["mount"]);
+        die();
+
+    } else
+    {
+
+        //  the mount param is crucial to the stream request
+        //  throw error
+        return_error("400", "no_mount_param", "'mount' parameter is missing. example; ?stream&mount=disco");
 
     }
 
