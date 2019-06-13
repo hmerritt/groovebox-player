@@ -1,4 +1,3 @@
-
 <?php
 
 
@@ -18,11 +17,8 @@
 
 
 
-
-
-
 //  get user's settings
-require "settings.php";
+require_once("settings.php");
 
 
 
@@ -194,13 +190,16 @@ if (empty($_GET))
 
 
 //  check for the existance of valid url params
+
+
 //  if metadata param exists
+//  get icecast metadata
 if (isset($_GET["metadata"]))
 {
 
 
     //  import the metadata class
-    require "libs/metadata.php";
+    require_once("libs/metadata.php");
 
 
     //  init Metadata class
@@ -235,7 +234,49 @@ if (isset($_GET["metadata"]))
 
 
 
+//  if cover param exists
+//  get the cover art for the current track on a specific mount point
+if (isset($_GET["coverArt"]) ||
+    isset($_GET["art"])      ||
+    isset($_GET["cover"]))
+{
+
+
+    //  check for mount param
+    if (isset($_GET["mount"]))
+    {
+
+
+        //  import the metadata class
+        require_once("libs/cover-art.php");
+
+
+        //  init Metadata class
+        $coverArt = new CoverArt();
+
+
+        //  echo the cover art
+        die($coverArt->currentlyPlaying($_GET["mount"]));
+
+
+    } else
+    {
+
+        //  the mount param is crucial to the stream request
+        //  throw error
+        return_error("400", "no_mount_param", "'mount' parameter is missing. example; ?coverArt&mount=disco");
+
+    }
+
+
+}
+
+
+
+
+
 //  if stream param exists
+//  get an audio stream from a specific mount point
 if (isset($_GET["stream"]))
 {
 
