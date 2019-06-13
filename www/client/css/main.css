@@ -169,6 +169,7 @@ header.title h1 {
   text-align: center;
   font-weight: normal;
   cursor: default;
+  text-transform: capitalize;
 }
 
 

@@ -29,8 +29,122 @@ $(document).ready(function()
 
 
 
+
+    /*  url parameters  */
+
+
+    //  get url parameter
+    function gup( name, url )
+    {
+        if (!url) url = location.href;
+        name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        var regexS = "[\\?&]"+name+"=([^&#]*)";
+        var regex = new RegExp( regexS );
+        var results = regex.exec( url );
+        return results == null ? null : results[1];
+    }
+
+
+
+
+    //  set main radio var
+    //  stores metadata on each mount point
+    var radio = {
+        "mount": gup("mount"),
+        "metadata": {
+            "raw": {},
+            "fullTitle": "",
+            "title": "",
+            "artist": "",
+            "coverArt": "../api/?cover&mount=" + gup("mount")
+        }
+    };
+
+
+
+
+
     /*  metadata  */
 
+
+    //  get metadata for a specific mount point
+    function getMetadata(mount)
+    {
+
+        fetch("../api/?metadata&mount=" + mount).then(function (r)
+        {
+
+            //  expect a json response
+            return r.json();
+
+        }).then(function (data)
+        {
+
+            //  add metadata to main radio var
+            radio["metadata"]["raw"] = data["content"];
+            radio["metadata"]["fullTitle"] = data["content"]["title"];
+
+            //  split the full title into title and artist
+            radio["metadata"]["title"] = radio["metadata"]["fullTitle"].split(" - ")[1];
+            radio["metadata"]["artist"] = radio["metadata"]["fullTitle"].split(" - ")[0];
+
+
+            //  updata the metadata in the UI
+            applyMetadata(mount);
+
+        });
+
+    }
+
+
+    //  add the metadata values from the radio var into the user-interface
+    function applyMetadata(mount)
+    {
+
+        //  get metadata values
+        var metadata = radio["metadata"];
+
+
+        //  re-create the currently playing full-title using the name and artist
+        var currentTitle = $(".track-info .track-artist").html() +" - "+ $(".track-info .track-name").html();
+
+
+        //  check if the (new) metadata is different than the currently playing song
+        if (metadata["fullTitle"] !== currentTitle)
+        {
+
+            //  update the metadata
+
+            //  update the track name
+            $(".track-info .track-name").html(metadata["title"]);
+
+            //  update the track artist
+            $(".track-info .track-artist").html(metadata["artist"]);
+
+            //  update the cover-art
+            $(".album-art img").attr("src", radio["metadata"]["coverArt"] +"&"+ new Date().getTime());
+
+        }
+
+    }
+
+
+
+    //  get metadata on pageload
+    getMetadata(radio["mount"]);
+
+
+
+    //  get metadata every i seocnds
+    //  metadata needs to be updated frequently to check for changes
+    setInterval(function()
+    {
+
+
+        getMetadata(radio["mount"]);
+
+
+    }, 10 * 1000);
 
 
 
@@ -50,7 +164,7 @@ $(document).ready(function()
 
     //  setup audio element
     //  set volume to 50%
-    var audio = new Audio("../api/?stream&mount=60s"); // https://merritt.es/radio/stream/60s
+    var audio = new Audio("../api/?stream&mount=" + radio["mount"]);
         audio.volume = 0.5;
         audio.setAttribute("type", "audio/mpeg");
         audio.setAttribute("preload", "none");

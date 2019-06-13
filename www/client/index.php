@@ -1,3 +1,38 @@
+<?php
+
+
+
+
+//  check for empty url parameters
+if (!isset($_GET["mount"]))
+{
+
+    //  no url parameters set
+    //  throw error and stop the script
+    die("error");
+
+}
+
+
+//  set url params
+$mount = $_GET["mount"];
+
+
+
+
+?>
+<!--
+
+https://github.com/Hmerritt/internet-radio
+
+ _____       _                       _     _____           _ _
+|_   _|     | |                     | |   |  __ \         | (_)
+  | |  _ __ | |_ ___ _ __ _ __   ___| |_  | |__) |__ _  __| |_  ___
+  | | | '_ \| __/ _ \ '__| '_ \ / _ \ __| |  _  // _` |/ _` | |/ _ \
+ _| |_| | | | ||  __/ |  | | | |  __/ |_  | | \ \ (_| | (_| | | (_) |
+|_____|_| |_|\__\___|_|  |_| |_|\___|\__| |_|  \_\__,_|\__,_|_|\___/
+
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +41,7 @@
     <meta name="author" content="https://github.com/Hmerritt" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
-    <title>Internet Radio</title>
+    <title><?php echo $mount; ?> - Groovebox - Internet Radio</title>
 
 
     <!--  tab icons  -->
@@ -32,6 +67,7 @@
     <!--  scripts  -->
     <script src="js/libs/jquery.js" type="text/javascript"></script>
     <script src="js/libs/oscilloscope.js" type="text/javascript"></script>
+    <script src="js/libs/unfetch.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
 
 </head>
@@ -46,12 +82,12 @@
 
                 <!--  title  -->
                 <header class="title">
-                    <h1 class="overflow-ellipsis">Groovebox <strong>Disco</strong></h1>
+                    <h1 class="overflow-ellipsis">Groovebox <strong><?php echo $mount; ?></strong></h1>
                 </header>
 
                 <!--  album art  -->
                 <div class="album-art no-user-select">
-                    <img src="img/example-cover.jpg" alt="Album Art" draggable="false">
+                    <img src="img/default-cover.png" alt="Album Art" draggable="false">
 
                     <!--  play/pause btn  -->
                     <div class="audio-controls hidden flex">
@@ -66,8 +102,8 @@
 
                 <!--  track information  -->
                 <div class="track-info">
-                    <h2 class="track-name overflow-ellipsis" title="Don't leave me now">Don't leave me now</h2>
-                    <h3 class="track-artist overflow-ellipsis" title="Madleen Kane">Madleen Kane</h3>
+                    <h2 class="track-name overflow-ellipsis" title="Don't leave me now"></h2>
+                    <h3 class="track-artist overflow-ellipsis" title="Madleen Kane"></h3>
                 </div>
 
                 <!--  volume value  -->
