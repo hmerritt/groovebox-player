@@ -116,10 +116,10 @@ $(document).ready(function()
             //  update the metadata
 
             //  update the track name
-            $(".track-info .track-name").html(metadata["title"]);
+            $(".track-info .track-name").html(metadata["title"]).attr("title", metadata["title"]);
 
             //  update the track artist
-            $(".track-info .track-artist").html(metadata["artist"]);
+            $(".track-info .track-artist").html(metadata["artist"]).attr("title", metadata["artist"]);
 
             //  update the cover-art
             $(".album-art img").attr("src", radio["metadata"]["coverArt"] +"&"+ new Date().getTime());
@@ -144,7 +144,7 @@ $(document).ready(function()
         getMetadata(radio["mount"]);
 
 
-    }, 10 * 1000);
+    }, 15 * 1000);
 
 
 

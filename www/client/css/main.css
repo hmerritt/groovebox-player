@@ -192,7 +192,9 @@ header.title h1 {
 
 
 .album-art img {
-  width: 100%;
+  min-width: 100%;
+  min-height: 400px;
+  max-height: 410px;
 }
 
 
