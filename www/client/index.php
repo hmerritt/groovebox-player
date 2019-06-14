@@ -4,18 +4,18 @@
 
 
 //  check for empty url parameters
-if (!isset($_GET["mount"]))
+if (!isset($_GET["playlist"]))
 {
 
     //  no url parameters set
     //  throw error and stop the script
-    die("error");
+    die("error - no playlist selected. add this to the URL: ?playlist=disco");
 
 }
 
 
 //  set url params
-$mount = $_GET["mount"];
+$playlist = $_GET["playlist"];
 
 
 
@@ -25,12 +25,12 @@ $mount = $_GET["mount"];
 
 https://github.com/Hmerritt/internet-radio
 
- _____       _                       _     _____           _ _
-|_   _|     | |                     | |   |  __ \         | (_)
-  | |  _ __ | |_ ___ _ __ _ __   ___| |_  | |__) |__ _  __| |_  ___
-  | | | '_ \| __/ _ \ '__| '_ \ / _ \ __| |  _  // _` |/ _` | |/ _ \
- _| |_| | | | ||  __/ |  | | | |  __/ |_  | | \ \ (_| | (_| | | (_) |
-|_____|_| |_|\__\___|_|  |_| |_|\___|\__| |_|  \_\__,_|\__,_|_|\___/
+  _____                          _
+ / ____|                        | |
+| |  __ _ __ ___   _____   _____| |__   _____  __
+| | |_ | '__/ _ \ / _ \ \ / / _ \ '_ \ / _ \ \/ /
+| |__| | | | (_) | (_) \ V /  __/ |_) | (_) >  <
+\_____|_|  \___/ \___/ \_/ \___|_.__/ \___/_/\_\
 
 -->
 <!DOCTYPE html>
@@ -41,7 +41,7 @@ https://github.com/Hmerritt/internet-radio
     <meta name="author" content="https://github.com/Hmerritt" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
-    <title><?php echo $mount; ?> - Groovebox - Internet Radio</title>
+    <title><?php echo $playlist; ?> - Groovebox</title>
 
 
     <!--  tab icons  -->
@@ -82,7 +82,7 @@ https://github.com/Hmerritt/internet-radio
 
                 <!--  title  -->
                 <header class="title">
-                    <h1 class="overflow-ellipsis">Groovebox <strong><?php echo $mount; ?></strong></h1>
+                    <h1 class="overflow-ellipsis">Groovebox <strong><?php echo $playlist; ?></strong></h1>
                 </header>
 
                 <!--  album art  -->

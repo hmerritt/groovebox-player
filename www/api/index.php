@@ -281,20 +281,31 @@ if (isset($_GET["stream"]))
 {
 
 
-    //  check for mount param
-    if (isset($_GET["mount"]))
+    //  check for playlist url param
+    if (isset($_GET["playlist"]))
     {
 
-        // set URL and other appropriate options
-        header("Location: http://". $settings["icecast_host"] .":". $settings["icecast_port"] ."/". $_GET["mount"]);
-        die();
+
+        //  import the stream class
+        require_once("libs/stream.php");
+
+
+        //  init Metadata class
+        $stream = new Stream();
+
+
+        //  get the current song playing
+        die($stream->audio($_GET["playlist"]));
+
 
     } else
     {
 
-        //  the mount param is crucial to the stream request
+
+        //  the playlist param is crucial to the stream request
         //  throw error
-        return_error("400", "no_mount_param", "'mount' parameter is missing. example; ?stream&mount=disco");
+        return_error("400", "no_playlist_param", "'playlist' parameter is missing. example; ?stream&playlist=disco");
+
 
     }
 

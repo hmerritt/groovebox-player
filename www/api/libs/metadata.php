@@ -19,9 +19,15 @@
 
 
 
+
+
 //  metadata class to retrieve data from icecast endpoints such as; status-json.xsl
 class Metadata
 {
+
+
+
+
 
 
 
@@ -39,6 +45,10 @@ class Metadata
 
 
     }
+
+
+
+
 
 
 
@@ -65,6 +75,10 @@ class Metadata
 
 
 
+
+
+
+
     //  get mount specific metadata from the status-json.xsl
     public function mount($mountPoint)
     {
@@ -83,6 +97,10 @@ class Metadata
 
 
     }
+
+
+
+
 
 
 

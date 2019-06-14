@@ -19,8 +19,13 @@
 
 
 
+
+
 //  get lib to extract cover from .mp3 file
 require_once("vendors/getid3/getid3.php");
+
+
+
 
 
 
@@ -29,6 +34,10 @@ require_once("vendors/getid3/getid3.php");
 //  metadata class to retrieve data from icecast endpoints such as; status-json.xsl
 class CoverArt
 {
+
+
+
+
 
 
 
@@ -50,6 +59,10 @@ class CoverArt
 
 
     }
+
+
+
+
 
 
 
@@ -102,7 +115,7 @@ class CoverArt
 
             //  set image header - interpret data as an image
             header("Content-Type: $mimetype");
-            
+
 
 
             //  echo the image to the user
@@ -124,6 +137,10 @@ class CoverArt
 
 
 
+
+
+
+
     //  get the cover-art for any track on a specific mount
     public function track($mountPoint, $trackName)
     {
@@ -133,6 +150,10 @@ class CoverArt
 
 
     }
+
+
+
+
 
 
 
