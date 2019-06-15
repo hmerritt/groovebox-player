@@ -44,6 +44,19 @@ class Stream
         $this->settings = $settings;
 
 
+
+        //  define the default layout for the _streamdata file
+        $this->defaultStreamData = [
+            "stream" => [
+                "track" => "",
+                "start" => 0,
+                "end" => 0,
+                "length" => 0
+            ],
+            "played" => []
+        ];
+
+
     }
 
 
@@ -100,8 +113,8 @@ class Stream
             {
 
 
-                //  the _streamdata does not exist - create it
-                echo "_streamdata does not exist; lets create it";
+                //  the _streamdata does not exist - create it using the default values
+                $this->write_streamdata($playlist, $this->defaultStreamData);
 
             }
 
@@ -145,7 +158,7 @@ class Stream
         $audioFiles = array_values(
                      array_diff(
                          preg_grep(
-                             '~\.('. $this->settings["music_file_ext"] .')$~', scandir($playlistDir)
+                             '~\.(mp3|aac|wav|ogg)$~', scandir($playlistDir)
                          ),
                          $streamData["played"]
                      )
@@ -154,22 +167,61 @@ class Stream
 
 
         //  check if array is empty
-        //  if true - all tracks have been played
         if (empty($audioFiles))
         {
 
 
-            //  reset the _streamdata
-            $this->create_streamdata($playlist);
+            //  check if played tracks is more than 0
+            //  if true - all tracks have been played
+            //  if false - there are no tracks to play
+            if (sizeof($streamData["played"]) > 1)
+            {
 
-            //
+
+                //  reset the _streamdata
+                //  remove unneeded items from the _streamdata
+                unset($streamData["stream"]["timeIntoTrack"]);
+
+
+                //  clear all played tracks
+                //  keep that last played track so it does not play twice by mistake
+                $streamData["played"] = [end($streamData["played"])];
+
+
+                //  update the _streamdata file with updated values
+                $this->write_streamdata($playlist, $streamData);
+
+
+                //  re-run this function with the updated _streamdata
+                $this->select_track($playlist, $streamData);
+
+
+                //  do not conntinue running this function
+                return false;
+
+
+            } else
+            {
+
+
+                echo "there are no tracks to play";
+                die();
+
+
+            }
 
 
         }
 
 
 
-        echo "<pre>"; print_r($audioFiles); echo "</pre>";
+        //  get the next track by generating a random number
+        //  use the number as the index for the scanned files
+        $newTrack = $audioFiles[rand(0, sizeof($audioFiles)-1)];
+
+
+
+        echo "<pre>"; print_r($newTrack); echo "</pre>";
 
 
     }
@@ -181,13 +233,14 @@ class Stream
 
 
 
-    //  create the _streamdata file in a playlist folder
-    private function create_streamdata($playlist)
+    //  write to the _streamdata file in a playlist folder
+    private function write_streamdata($playlist, $newStreamData)
     {
 
 
-        //
-        echo "create or reset _streamdata";
+        //  write the new data into _streamdata
+        //  if the _streamdata does not exist - it will create it
+        file_put_contents("../tracks/$playlist/_streamdata", json_encode($newStreamData, JSON_PRETTY_PRINT));
 
 
     }

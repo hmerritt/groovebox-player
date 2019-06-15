@@ -2,6 +2,7 @@
 
 
 
+
 /*
   https://github.com/Hmerritt/internet-radio
 
@@ -9,13 +10,6 @@
 
 */
 $settings = [
-
-
-
-
-    //  set the file extension for the music on the server
-    //  default "mp3"
-    "music_file_ext" => "mp3",
 
 
 
@@ -36,6 +30,10 @@ $settings = [
 
 
 
+
+
+
+
 //  check settings var to decide the error show/hide state
 if ($settings["show_errors"])
 {
@@ -52,6 +50,10 @@ if ($settings["show_errors"])
     ini_set('display_errors', 0);
 
 }
+
+
+
+
 
 
 
