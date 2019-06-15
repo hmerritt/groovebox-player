@@ -21,7 +21,7 @@
 
 
 
-//  get lib to extract cover from .mp3 file
+//  get lib to extract cover from audio file
 require_once("vendors/getid3/getid3.php");
 
 

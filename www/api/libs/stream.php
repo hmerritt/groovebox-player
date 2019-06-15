@@ -20,6 +20,15 @@
 
 
 
+//  get lib to extract cover from audio file
+require_once("vendors/getid3/getid3.php");
+
+
+
+
+
+
+
 
 //  stream class is used to get the currently playing song for a specific playlist
 class Stream
@@ -75,6 +84,7 @@ class Stream
         $playlistDir = "../tracks/$playlist/";
 
 
+
         //  check if the requested playlist folder exists
         if (file_exists($playlistDir))
         {
@@ -96,12 +106,33 @@ class Stream
 
                 //  check if track has already ended
                 //  compare length with the time into the track
-                if ($streamData["stream"]["timeIntoTrack"] > $streamData["stream"]["length"])
+                //  add a varience of 10 seconds to prevent loading a track that is about to end
+                if ($streamData["stream"]["timeIntoTrack"] > $streamData["stream"]["length"] - 10)
                 {
 
-                    //  select another track to play
-                    $this->select_track($playlist, $streamData);
-                    return ""; // song has ended; dynamically select another track
+
+                    // song has ended; select another track to play
+                    $newTrack = $this->select_track($playlist, $streamData);
+
+
+                    //  get the length of the new track (in seconds)
+                    //  add the last track into the played array
+                    //  reset the time-into-track var
+                    $newTrackLength = floor((new getID3)->analyze($playlistDir . $newTrack)['playtime_seconds']);
+                    $streamData["played"][] = $streamData["stream"]["track"];
+                    $streamData["stream"]["timeIntoTrack"] = 0;
+
+
+                    //  add the new track info the the streamData var
+                    $streamData["stream"]["track"] = $newTrack;
+                    $streamData["stream"]["start"] = time();
+                    $streamData["stream"]["end"] = time() + $newTrackLength;
+                    $streamData["stream"]["length"] = $newTrackLength;
+
+
+                    //  update the _streamdata file with the new track info
+                    $this->write_streamdata($playlist, $streamData);
+
 
                 }
 
@@ -217,7 +248,7 @@ class Stream
 
         //  get the next track by generating a random number
         //  use the number as the index for the scanned files
-        $newTrack = $audioFiles[rand(0, sizeof($audioFiles)-1)];
+        return $audioFiles[rand(0, sizeof($audioFiles)-1)];
 
 
 
