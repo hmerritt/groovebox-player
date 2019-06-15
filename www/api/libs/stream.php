@@ -36,8 +36,12 @@ class Stream
     {
 
 
-        //  import the user's settings
+        //  get the user's settings
         global $settings;
+
+
+        //  import the user's settings
+        $this->settings = $settings;
 
 
     }
@@ -82,7 +86,9 @@ class Stream
                 if ($streamData["stream"]["timeIntoTrack"] > $streamData["stream"]["length"])
                 {
 
-                    return "song has ended; dynamically select another track";
+                    //  select another track to play
+                    $this->select_track($playlist, $streamData);
+                    return ""; // song has ended; dynamically select another track
 
                 }
 
@@ -120,21 +126,68 @@ class Stream
 
 
 
+    //  select another track to play for a specified playlist
+    private function select_track($playlist, $streamData)
+    {
+
+
+        //  get directory path for the playlist
+        $playlistDir = "../tracks/$playlist/";
+
+
+
+        //  add the last track into the played array
+        $streamData["played"][] = $streamData["stream"]["track"];
+
+
+        //  search all audio files within the playlist directory
+        //  remove all previously played tracks from the scan
+        $audioFiles = array_values(
+                     array_diff(
+                         preg_grep(
+                             '~\.('. $this->settings["music_file_ext"] .')$~', scandir($playlistDir)
+                         ),
+                         $streamData["played"]
+                     )
+                 );
+
+
+
+        //  check if array is empty
+        //  if true - all tracks have been played
+        if (empty($audioFiles))
+        {
+
+
+            //  reset the _streamdata
+            $this->create_streamdata($playlist);
+
+            //
+
+
+        }
+
+
+
+        echo "<pre>"; print_r($audioFiles); echo "</pre>";
+
+
+    }
+
+
+
+
+
+
+
+
     //  create the _streamdata file in a playlist folder
     private function create_streamdata($playlist)
     {
 
 
-        //  get metadata
-        $everything = json_decode(file_get_contents($this->statusJsonLink));
-
-
-        //  add metadata to the response content
-        $response = response_json("200", $everything);
-
-
-        //  return fetched json data
-        return $response;
+        //
+        echo "create or reset _streamdata";
 
 
     }

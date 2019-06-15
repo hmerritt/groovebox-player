@@ -13,20 +13,9 @@ $settings = [
 
 
 
-    //  port that the icecast server is running on
-    "icecast_port" => "7400",
-
-
-    //  domain-name or host that icecast is running from
-    //  e.g. example.com if running on a remote server
-    //  or   localhost
-    "icecast_host" => "harrymerritt.me",
-
-
-
     //  set the file extension for the music on the server
-    //  default ".mp3"
-    "music_file_ext" => ".mp3",
+    //  default "mp3"
+    "music_file_ext" => "mp3",
 
 
 
