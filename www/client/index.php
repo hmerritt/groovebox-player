@@ -101,9 +101,9 @@ https://github.com/Hmerritt/internet-radio
                 </div>
 
                 <!--  track information  -->
-                <div class="track-info">
-                    <h2 class="track-name overflow-ellipsis" title="Don't leave me now"></h2>
-                    <h3 class="track-artist overflow-ellipsis" title="Madleen Kane"></h3>
+                <div class="track-info" file="">
+                    <h2 class="track-name overflow-ellipsis" title="-"></h2>
+                    <h3 class="track-artist overflow-ellipsis" title="-"></h3>
                 </div>
 
                 <!--  volume value  -->

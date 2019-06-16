@@ -8,29 +8,12 @@ $(document).ready(function()
 
 
 
-    /*  icecast metadata - service worker
-
-    //  initialise
-    navigator.serviceWorker.register('js/libs/metadata-worker-alt.js');
-
-
-    navigator.serviceWorker.addEventListener('message', event => {
-        console.log(event);
-        if (event.origin != 'https://merritt.es') {
-            //return;
-        }
-        var meta = event.data.msg;
-        meta = meta.substring(meta.indexOf("'") + 1,meta.lastIndexOf("'"));
-        console.log(meta);
-    });
-
-    */
-
-
 
 
 
     /*  url parameters  */
+
+
 
 
     //  get url parameter
@@ -50,15 +33,12 @@ $(document).ready(function()
     //  set main radio var
     //  stores metadata on each mount point
     var radio = {
-        "mount": gup("mount"),
-        "metadata": {
-            "raw": {},
-            "fullTitle": "",
-            "title": "",
-            "artist": "",
-            "coverArt": "../api/?cover&mount=" + gup("mount")
-        }
+        "playlist": gup("playlist")
+        //"coverArt": "../api/?cover&playlist=" + gup("playlist")
     };
+
+
+
 
 
 
@@ -67,11 +47,14 @@ $(document).ready(function()
     /*  metadata  */
 
 
-    //  get metadata for a specific mount point
-    function getMetadata(mount)
+
+
+    //  get stream data for a specific playlist
+    function getStreamData(playlist)
     {
 
-        fetch("../api/?metadata&mount=" + mount).then(function (r)
+
+        fetch("../api/?stream&playlist=" + playlist).then(function (r)
         {
 
             //  expect a json response
@@ -80,58 +63,104 @@ $(document).ready(function()
         }).then(function (data)
         {
 
+
             //  add metadata to main radio var
-            radio["metadata"]["raw"] = data["content"];
-            radio["metadata"]["fullTitle"] = data["content"]["title"];
+            radio["stream"] = data;
+
+
 
             //  split the full title into title and artist
-            radio["metadata"]["title"] = radio["metadata"]["fullTitle"].split(" - ")[1];
-            radio["metadata"]["artist"] = radio["metadata"]["fullTitle"].split(" - ")[0];
+            radio["metadata"] = {
+                "fullTitle": radio["stream"]["track"].replace(/\.[^/.]+$/, "")
+            };
+
+
+            //  check for dash " - " within the file name
+            if (radio["metadata"]["fullTitle"].includes(" - "))
+            {
+
+                //  split the file name; artist - title
+                radio["metadata"]["title"] = radio["metadata"]["fullTitle"].split(" - ")[1];
+                radio["metadata"]["artist"] = radio["metadata"]["fullTitle"].split(" - ")[0];
+
+            } else
+            {
+
+                //  use the full-title as the main title and leave the artist blank
+                radio["metadata"]["title"] = radio["metadata"]["fullTitle"];
+                radio["metadata"]["artist"] = "-";
+
+            }
+
+
+            //  add the URl for the cover-art to the metadata
+            radio["metadata"]["coverArt"] = "../api/?cover&playlist=" + radio["playlist"];
+
 
 
             //  updata the metadata in the UI
-            applyMetadata(mount);
+            applyMetadata(playlist);
+
 
         });
 
+
     }
+
+
+
 
 
     //  add the metadata values from the radio var into the user-interface
     function applyMetadata(mount)
     {
 
+
         //  get metadata values
         var metadata = radio["metadata"];
 
 
-        //  re-create the currently playing full-title using the name and artist
-        var currentTitle = $(".track-info .track-artist").html() +" - "+ $(".track-info .track-name").html();
+        //  get the current audio file name
+        var currentAudioFile = $(".track-info").attr("file");
 
 
         //  check if the (new) metadata is different than the currently playing song
-        if (metadata["fullTitle"] !== currentTitle)
+        if (radio["stream"]["track"] !== currentAudioFile)
         {
 
+
             //  update the metadata
+
 
             //  update the track name
             $(".track-info .track-name").html(metadata["title"]).attr("title", metadata["title"]);
 
+
             //  update the track artist
             $(".track-info .track-artist").html(metadata["artist"]).attr("title", metadata["artist"]);
 
+
             //  update the cover-art
-            $(".album-art img").attr("src", radio["metadata"]["coverArt"] +"&"+ new Date().getTime());
+            $(".album-art img").attr("src", metadata["coverArt"] +"&"+ new Date().getTime());
+
+
+            //  update the current audio file
+            $(".track-info").attr("file", radio["stream"]["track"]);
+
 
         }
+
 
     }
 
 
 
+
+
     //  get metadata on pageload
-    getMetadata(radio["mount"]);
+    getStreamData(radio["playlist"]);
+
+
 
 
 
@@ -141,7 +170,7 @@ $(document).ready(function()
     {
 
 
-        getMetadata(radio["mount"]);
+        //getStreamData(radio["mount"]);
 
 
     }, 15 * 1000);
@@ -151,15 +180,21 @@ $(document).ready(function()
 
 
 
+
+
     /*  audio  */
+
+
 
 
     //  log action
     console.log("[Audio] Attempting to start audio");
 
 
+
     //  create an audio stream container
     var audioContext = new window.AudioContext();
+
 
 
     //  setup audio element
@@ -196,7 +231,12 @@ $(document).ready(function()
 
 
 
+
+
+
     /*  audio state (play/pause)  */
+
+
 
 
     //  stop/start music playback
@@ -217,6 +257,8 @@ $(document).ready(function()
     }
 
 
+
+
     //  set audio controls icon
     function setControlsIcon(icon)
     {
@@ -233,6 +275,8 @@ $(document).ready(function()
         }
 
     }
+
+
 
 
     //  toggle audio controls within the album cover
@@ -259,6 +303,8 @@ $(document).ready(function()
     }
 
 
+
+
     $(document).on("click", ".audio-controls", function()
     {
 
@@ -270,7 +316,12 @@ $(document).ready(function()
 
 
 
+
+
+
     /*  oscilloscope  */
+
+
 
 
     //  create source from html5 audio element
@@ -291,7 +342,12 @@ $(document).ready(function()
 
 
 
+
+
+
     /*  volume  */
+
+
 
 
     //  return the current volume
@@ -299,6 +355,8 @@ $(document).ready(function()
     {
         return audio.volume;
     }
+
+
 
 
     //  update volume percentage bar
@@ -325,8 +383,13 @@ $(document).ready(function()
 
     }
 
+
+
+
     //  update volume bar on page-load
     updateVolumeBar();
+
+
 
 
     //  change the volume
@@ -375,7 +438,13 @@ $(document).ready(function()
 
 
 
+
+
+
+
     /*  key press  */
+
+
 
 
     //  detect user keypress
@@ -416,6 +485,9 @@ $(document).ready(function()
         //console.log(e.which);
 
     });
+
+
+
 
 
 

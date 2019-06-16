@@ -214,11 +214,7 @@ class Stream
 
 
                 //  re-run this function with the updated _streamdata
-                $this->select_track($playlist, $streamData);
-
-
-                //  do not conntinue running this function
-                return false;
+                return $this->select_track($playlist, $streamData);
 
 
             } else
