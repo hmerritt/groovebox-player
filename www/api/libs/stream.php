@@ -91,63 +91,62 @@ class Stream
 
 
             //  check for existing _streamdata file within the playlist folder
-            if (file_exists($playlistDir . "_streamdata"))
+            if (!file_exists($playlistDir . "_streamdata"))
             {
-
-
-                //  open the _streamdata and decode it
-                $streamData = json_decode(file_get_contents($playlistDir . "_streamdata"), true);
-
-
-                //  get time into current track - in seconds
-                //  add straight into the _streamdata
-                $streamData["stream"]["timeIntoTrack"] = $streamData["stream"]["length"] - ($streamData["stream"]["end"] - time());
-
-
-                //  check if track has already ended
-                //  compare length with the time into the track
-                //  add a varience of 10 seconds to prevent loading a track that is about to end
-                if ($streamData["stream"]["timeIntoTrack"] > $streamData["stream"]["length"] - 10)
-                {
-
-
-                    // song has ended; select another track to play
-                    $newTrack = $this->select_track($playlist, $streamData);
-
-
-                    //  get the length of the new track (in seconds)
-                    //  add the last track into the played array
-                    //  reset the time-into-track var
-                    $newTrackLength = floor((new getID3)->analyze($playlistDir . $newTrack)['playtime_seconds']);
-                    $streamData["played"][] = $streamData["stream"]["track"];
-                    $streamData["stream"]["timeIntoTrack"] = 0;
-
-
-                    //  add the new track info the the streamData var
-                    $streamData["stream"]["track"] = $newTrack;
-                    $streamData["stream"]["start"] = time();
-                    $streamData["stream"]["end"] = time() + $newTrackLength;
-                    $streamData["stream"]["length"] = $newTrackLength;
-
-
-                    //  update the _streamdata file with the new track info
-                    $this->write_streamdata($playlist, $streamData);
-
-
-                }
-
-
-                echo json_encode($streamData);
-
-
-            } else
-            {
-
 
                 //  the _streamdata does not exist - create it using the default values
                 $this->write_streamdata($playlist, $this->defaultStreamData);
 
             }
+
+
+
+            //  open the _streamdata and decode it
+            $streamData = json_decode(file_get_contents($playlistDir . "_streamdata"), true);
+
+
+            //  get time into current track - in seconds
+            //  add straight into the _streamdata
+            $streamData["stream"]["timeIntoTrack"] = $streamData["stream"]["length"] - ($streamData["stream"]["end"] - time());
+
+
+            //  check if track has already ended
+            //  compare length with the time into the track
+            //  add a varience of 10 seconds to prevent loading a track that is about to end
+            if ($streamData["stream"]["timeIntoTrack"] > $streamData["stream"]["length"] - 10)
+            {
+
+
+                // song has ended; select another track to play
+                $newTrack = $this->select_track($playlist, $streamData);
+
+
+                //  get the length of the new track (in seconds)
+                //  add the last track into the played array
+                //  reset the time-into-track var
+                $newTrackLength = floor((new getID3)->analyze($playlistDir . $newTrack)['playtime_seconds']);
+                $streamData["played"][] = $streamData["stream"]["track"];
+                $streamData["stream"]["timeIntoTrack"] = 0;
+
+
+                //  add the new track info the the streamData var
+                $streamData["stream"]["track"] = $newTrack;
+                $streamData["stream"]["start"] = time();
+                $streamData["stream"]["end"] = time() + $newTrackLength;
+                $streamData["stream"]["length"] = $newTrackLength;
+
+
+                //  update the _streamdata file with the new track info
+                $this->write_streamdata($playlist, $streamData);
+
+
+            }
+
+
+
+            //  echo the track info
+            echo json_encode($streamData["stream"]);
+
 
 
         } else
