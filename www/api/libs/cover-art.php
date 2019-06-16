@@ -21,8 +21,8 @@
 
 
 
-//  get lib to extract cover from audio file
-require_once("vendors/getid3/getid3.php");
+//  import the stream class
+require_once("libs/stream.php");
 
 
 
@@ -54,10 +54,6 @@ class CoverArt
         $this->settings = $settings;
 
 
-        //  set the status-json link using the settings
-        $this->statusJsonLink = "http://". $settings["icecast_host"] .":". $settings["icecast_port"] ."/status-json.xsl";
-
-
     }
 
 
@@ -67,17 +63,18 @@ class CoverArt
 
 
 
-    //  get the cover-art for the currently playing track on a specific mount
-    public function currentlyPlaying($mountPoint)
+    //  get the cover-art for the currently playing track on a specific playlist
+    public function currentlyPlaying($playlist)
     {
 
 
-        //  get the currently playing song
-        $currentTrack = json_decode(file_get_contents($this->statusJsonLink ."?mount=/". $mountPoint), true)["icestats"]["source"]["title"];
+        //  get the currently playing song by loaded latest stream data
+        $currentTrack = (new Stream())->audio($playlist)["track"];
 
 
         //  create path from the track name
-        $filePath = "../tracks/" . $mountPoint . "/" . $currentTrack . $this->settings["music_file_ext"];
+        $filePath = "../tracks/" . $playlist . "/" . $currentTrack;
+
 
 
         //  start getid3 instance
@@ -85,6 +82,7 @@ class CoverArt
 
         //  open file and extract metadata
         $fileInfo = $getID3->analyze($filePath);
+
 
 
         //  set a default cover as a fallback
@@ -142,7 +140,7 @@ class CoverArt
 
 
     //  get the cover-art for any track on a specific mount
-    public function track($mountPoint, $trackName)
+    public function track($playlist, $trackName)
     {
 
 

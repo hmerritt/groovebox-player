@@ -20,15 +20,6 @@
 
 
 
-//  get lib to extract cover from audio file
-require_once("vendors/getid3/getid3.php");
-
-
-
-
-
-
-
 
 //  stream class is used to get the currently playing song for a specific playlist
 class Stream
@@ -145,7 +136,7 @@ class Stream
 
 
             //  echo the track info
-            echo json_encode($streamData["stream"]);
+            return $streamData["stream"];
 
 
 

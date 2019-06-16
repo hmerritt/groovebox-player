@@ -17,8 +17,20 @@
 
 
 
+
+
+
+
+
 //  get user's settings
 require_once("settings.php");
+
+
+//  get lib to extract metadata from audio file
+require_once("vendors/getid3/getid3.php");
+
+
+
 
 
 
@@ -181,9 +193,12 @@ if (empty($_GET))
 
     //  no url parameters set
     //  throw error and stop the script
-    return_error("400", "no_url_params", "no url parameters set. example; ?metadata&mount=disco");
+    return_error("400", "no_url_params", "no url parameters set. example; ?metadata&playlist=disco");
 
 }
+
+
+
 
 
 
@@ -192,91 +207,11 @@ if (empty($_GET))
 //  check for the existance of valid url params
 
 
-//  if metadata param exists
-//  get icecast metadata
-if (isset($_GET["metadata"]))
-{
-
-
-    //  import the metadata class
-    require_once("libs/metadata.php");
-
-
-    //  init Metadata class
-    $metadata = new Metadata();
-
-
-    //  set json header - expect a json response
-    header("Content-Type: application/json");
-
-
-
-
-    //  check if 'mount' param exists
-    if (!isset($_GET["mount"]))
-    {
-
-        //  get all metadata
-        die(json_encode($metadata->everything()));
-
-    } else
-    {
-
-        //  get mount specific metadata
-        die(json_encode($metadata->mount($_GET["mount"])));
-
-    }
-
-
-}
-
-
-
-
-
-//  if cover param exists
-//  get the cover art for the current track on a specific mount point
-if (isset($_GET["coverArt"]) ||
-    isset($_GET["art"])      ||
-    isset($_GET["cover"]))
-{
-
-
-    //  check for mount param
-    if (isset($_GET["mount"]))
-    {
-
-
-        //  import the metadata class
-        require_once("libs/cover-art.php");
-
-
-        //  init Metadata class
-        $coverArt = new CoverArt();
-
-
-        //  echo the cover art
-        die($coverArt->currentlyPlaying($_GET["mount"]));
-
-
-    } else
-    {
-
-        //  the mount param is crucial to the stream request
-        //  throw error
-        return_error("400", "no_mount_param", "'mount' parameter is missing. example; ?coverArt&mount=disco");
-
-    }
-
-
-}
-
-
 
 
 
 //  if stream param exists
-//  get an audio stream from a specific mount point
+//  get an audio stream from a specific playlist
 if (isset($_GET["stream"]))
 {
 
@@ -290,12 +225,17 @@ if (isset($_GET["stream"]))
         require_once("libs/stream.php");
 
 
-        //  init Metadata class
+        //  init Stream class
         $stream = new Stream();
 
 
+        //  set json header - expect a json response
+        header("Content-Type: application/json");
+
+
+
         //  get the current song playing
-        die($stream->audio($_GET["playlist"]));
+        die(json_encode($stream->audio($_GET["playlist"])));
 
 
     } else
@@ -311,6 +251,52 @@ if (isset($_GET["stream"]))
 
 
 }
+
+
+
+
+
+
+
+//  if cover param exists
+//  get the cover art for the current track on a specific playlist
+if (isset($_GET["coverArt"]) ||
+    isset($_GET["art"])      ||
+    isset($_GET["cover"]))
+{
+
+
+    //  check for playlist param
+    if (isset($_GET["playlist"]))
+    {
+
+
+        //  import the metadata class
+        require_once("libs/cover-art.php");
+
+
+        //  init Metadata class
+        $coverArt = new CoverArt();
+
+
+        //  echo the cover art
+        die($coverArt->currentlyPlaying($_GET["playlist"]));
+
+
+    } else
+    {
+
+        //  the playlist param is crucial to the stream request
+        //  throw error
+        return_error("400", "no_playlist_param", "'playlist' parameter is missing. example; ?coverArt&playlist=disco");
+
+    }
+
+
+}
+
+
+
 
 
 
