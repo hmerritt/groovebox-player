@@ -229,13 +229,9 @@ if (isset($_GET["stream"]))
         $stream = new Stream();
 
 
-        //  set json header - expect a json response
-        header("Content-Type: application/json");
-
-
 
         //  get the current song playing
-        die(json_encode($stream->audio($_GET["playlist"])));
+        die($stream->audio($_GET["playlist"]));
 
 
     } else
@@ -245,6 +241,54 @@ if (isset($_GET["stream"]))
         //  the playlist param is crucial to the stream request
         //  throw error
         return_error("400", "no_playlist_param", "'playlist' parameter is missing. example; ?stream&playlist=disco");
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+//  if metadata param exists
+//  get an audio metadata from a specific playlist
+if (isset($_GET["metadata"]))
+{
+
+
+    //  check for playlist url param
+    if (isset($_GET["playlist"]))
+    {
+
+
+        //  import the metadata class
+        require_once("libs/stream.php");
+
+
+        //  init Stream class
+        $metadata = new Stream();
+
+
+        //  set json header - expect a json response
+        header("Content-Type: application/json");
+
+
+
+        //  get the current song playing
+        die(json_encode($metadata->metadata($_GET["playlist"])));
+
+
+    } else
+    {
+
+
+        //  the playlist param is crucial to the metadata request
+        //  throw error
+        return_error("400", "no_playlist_param", "'playlist' parameter is missing. example; ?metadata&playlist=disco");
 
 
     }
@@ -272,7 +316,7 @@ if (isset($_GET["coverArt"]) ||
 
 
         //  import the metadata class
-        require_once("libs/cover-art.php");
+        require_once("libs/cover_art.php");
 
 
         //  init Metadata class

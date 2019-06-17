@@ -33,7 +33,9 @@ $(document).ready(function()
     //  set main radio var
     //  stores metadata on each mount point
     var radio = {
-        "playlist": gup("playlist")
+        "playlist": gup("playlist"),
+        "songsPlayed": 0,
+        "clock": Math.round(new Date().getTime()/1000)
         //"coverArt": "../api/?cover&playlist=" + gup("playlist")
     };
 
@@ -49,12 +51,12 @@ $(document).ready(function()
 
 
 
-    //  get stream data for a specific playlist
+    //  get stream metadata for a specific playlist
     function getStreamData(playlist)
     {
 
 
-        fetch("../api/?stream&playlist=" + playlist).then(function (r)
+        fetch("../api/?metadata&playlist=" + playlist).then(function (r)
         {
 
             //  expect a json response
@@ -99,7 +101,7 @@ $(document).ready(function()
 
 
             //  updata the metadata in the UI
-            applyMetadata(playlist);
+            applyMetadata();
 
 
         });
@@ -112,7 +114,7 @@ $(document).ready(function()
 
 
     //  add the metadata values from the radio var into the user-interface
-    function applyMetadata(mount)
+    function applyMetadata()
     {
 
 
@@ -164,16 +166,21 @@ $(document).ready(function()
 
 
 
-    //  get metadata every i seocnds
-    //  metadata needs to be updated frequently to check for changes
+    //  create a clock that ticks 5 times every 5 seconds
+    //  used for calcutating when to fetch a new song
     setInterval(function()
     {
 
 
-        //getStreamData(radio["mount"]);
+        //  update the clock timestamp to the exact time
+        radio["clock"] = Math.round(new Date().getTime()/1000);
 
 
-    }, 15 * 1000);
+        //  check if currently playing song is about to end
+        //console.log(audio.volume);
+
+
+    }, 5 * 1000);
 
 
 
@@ -199,16 +206,16 @@ $(document).ready(function()
 
     //  setup audio element
     //  set volume to 50%
-    var audio = new Audio("../api/?stream&mount=" + radio["mount"]);
+    var audio = new Audio("../tracks/" + radio["playlist"] + "/" + "Mario Nascimbene - Malaga Shoe Shine Boy.mp3");
         audio.volume = 0.5;
-        audio.setAttribute("type", "audio/mpeg");
-        audio.setAttribute("preload", "none");
         audio.setAttribute("crossorigin", "anonymous");
         audio.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
 
 
+
     // attempt to play the audio
     var playPromise = audio.play();
+
 
     //  catch error if the audio fails to start
     if (playPromise !== undefined)
@@ -217,7 +224,9 @@ $(document).ready(function()
           // Automatic playback started!
           // Show playing UI.
           setControlsIcon("pause");
+          console.log(audio.duration);
           console.log("[Audio] Auto-play started successfully!");
+
         })
         .catch(error => {
             // Auto-play was prevented
@@ -451,14 +460,17 @@ $(document).ready(function()
     $('body').keydown(function(e)
     {
 
+
         switch (e.which)
         {
+
 
             //  space key
             case 32:
                 e.preventDefault();
                 togglePlayback();
                 break;
+
 
             //  plus,
             //  up-arrow,
@@ -470,6 +482,7 @@ $(document).ready(function()
                 changeVolume("up");
                 break;
 
+
             //  minus,
             //  down-arrow,
             //  left-arrow key
@@ -480,9 +493,11 @@ $(document).ready(function()
                 changeVolume("down");
                 break;
 
+
         }
 
         //console.log(e.which);
+
 
     });
 

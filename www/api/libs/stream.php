@@ -7,10 +7,11 @@
 
   https://github.com/Hmerritt/internet-radio
 
-  This file contains functions on retrieving metadata from icecast.
+  This file contains functions on providing metadata and direct audio stream for the files within a playlist folder.
   Example usage;
 
   /radio/api/?stream&playlist=disco
+  /radio/api/?metadata&playlist=disco
 
 */
 
@@ -66,8 +67,34 @@ class Stream
 
 
 
-    //  get audio track for a playlist
+    //  play audio stream for the currently playing track in a playlist
     public function audio($playlist)
+    {
+
+
+        //  get the metadata for the current track
+        $metadata = $this->metadata($playlist);
+
+
+        //  set the header as the tracks mime-type
+        header("Content-Type: " . $metadata["type"]);
+
+
+        //  open audio file and output it into the browser
+        echo file_get_contents("../tracks/$playlist/" . $metadata["track"]);
+
+
+    }
+
+
+
+
+
+
+
+
+    //  get audio metadata for the currently playing track in a playlist
+    public function metadata($playlist)
     {
 
 
@@ -112,12 +139,33 @@ class Stream
                 $newTrack = $this->select_track($playlist, $streamData);
 
 
+                //  get the track metadata
+                $trackData = (new getID3)->analyze($playlistDir . $newTrack);
+
+
                 //  get the length of the new track (in seconds)
                 //  add the last track into the played array
                 //  reset the time-into-track var
-                $newTrackLength = floor((new getID3)->analyze($playlistDir . $newTrack)['playtime_seconds']);
+                $newTrackLength = floor($trackData['playtime_seconds']);
                 $streamData["played"][] = $streamData["stream"]["track"];
                 $streamData["stream"]["timeIntoTrack"] = 0;
+
+
+                //  check if mime-type exists
+                if (isset($trackData["mime_type"]))
+                {
+
+                    //  use detected mime-type
+                    $streamData["stream"]["type"] = $trackData["mime_type"];
+
+                } else
+                {
+
+                    //  if no mime-type is found - fallback to mpeg
+                    $streamData["stream"]["type"] = "audio/mpeg";
+
+
+                }
 
 
                 //  add the new track info the the streamData var

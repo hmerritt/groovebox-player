@@ -69,7 +69,7 @@ class CoverArt
 
 
         //  get the currently playing song by loaded latest stream data
-        $currentTrack = (new Stream())->audio($playlist)["track"];
+        $currentTrack = (new Stream())->metadata($playlist)["track"];
 
 
         //  create path from the track name
