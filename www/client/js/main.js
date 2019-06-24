@@ -199,42 +199,58 @@ $(document).ready(function()
 
 
 
+
+
     //  create an audio stream container
     var audioContext = new window.AudioContext();
 
 
 
+
+
     //  setup audio element
     //  set volume to 50%
-    var audio = new Audio("../tracks/" + radio["playlist"] + "/" + "Mario Nascimbene - Malaga Shoe Shine Boy.mp3");
+    var audio = new Audio();
+
+
+
+    function changeAudio()
+    {
+
+
+        //  change audio element
+        //  set volume to 50%
+        //  allow cross origin
+        audio.src = "../api/?stream&playlist="+ radio["playlist"] +"&"+ new Date().getTime();
         audio.volume = 0.5;
         audio.setAttribute("crossorigin", "anonymous");
         audio.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
 
+        togglePlayback();
+        console.log("audio changed!");
 
 
-    // attempt to play the audio
-    var playPromise = audio.play();
-
-
-    //  catch error if the audio fails to start
-    if (playPromise !== undefined)
-    {
-        playPromise.then(_ => {
-          // Automatic playback started!
-          // Show playing UI.
-          setControlsIcon("pause");
-          console.log(audio.duration);
-          console.log("[Audio] Auto-play started successfully!");
-
-        })
-        .catch(error => {
-            // Auto-play was prevented
-            // Show paused UI.
-            toggleControls("play");
-            console.error("[Audio] Auto-play was prevented ("+ error +")");
-        });
     }
+
+
+
+ changeAudio();
+
+
+
+
+
+
+    //  wait for the track to end
+    audio.addEventListener("ended", function()
+    {
+
+
+        //  re-fetch the audio stream (a new track should be playing)
+        changeAudio();
+
+
+    });
 
 
 
@@ -252,16 +268,48 @@ $(document).ready(function()
     function togglePlayback()
     {
 
+
         //  check if audio is playing
-        if (!audio.paused)
+        if (!audio.paused && audio.duration > 0)
         {
+
+
             audio.pause();
             setControlsIcon("play");
+
+
         } else
         {
-            audio.play();
+
+
+            // attempt to play the audio
+            var playPromise = audio.play();
+
+
+            //  catch error if the audio fails to start
+            if (playPromise !== undefined)
+            {
+                playPromise.then(_ => {
+                  // Automatic playback started!
+                  // Show playing UI.
+                  setControlsIcon("pause");
+                  console.log("[Audio] Auto-play started successfully!");
+
+                })
+                .catch(error => {
+                    // Auto-play was prevented
+                    // Show paused UI.
+                    toggleControls("play");
+                    console.error("[Audio] Auto-play was prevented ("+ error +")");
+                });
+            }
+
+
             setControlsIcon("pause");
+
+
         }
+
 
     }
 
