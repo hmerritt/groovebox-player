@@ -159,33 +159,6 @@ $(document).ready(function()
 
 
 
-    //  get metadata on pageload
-    getStreamData(radio["playlist"]);
-
-
-
-
-
-    //  create a clock that ticks 5 times every 5 seconds
-    //  used for calcutating when to fetch a new song
-    setInterval(function()
-    {
-
-
-        //  update the clock timestamp to the exact time
-        radio["clock"] = Math.round(new Date().getTime()/1000);
-
-
-        //  check if currently playing song is about to end
-        //console.log(audio.volume);
-
-
-    }, 5 * 1000);
-
-
-
-
-
 
 
 
@@ -226,15 +199,22 @@ $(document).ready(function()
         audio.setAttribute("crossorigin", "anonymous");
         audio.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
 
+
+        //  get latest track metadata
+        getStreamData(radio["playlist"]);
+
+
+        //  play audio
         togglePlayback();
-        console.log("audio changed!");
 
 
     }
 
 
 
- changeAudio();
+
+    //  start audio on page load
+    changeAudio();
 
 
 
