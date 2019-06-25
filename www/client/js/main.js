@@ -30,13 +30,12 @@ $(document).ready(function()
 
 
 
-    //  set main radio var
+    //  set main groovebox var
     //  stores metadata on each mount point
-    var radio = {
+    var groovebox = {
         "playlist": gup("playlist"),
         "songsPlayed": 0,
-        "clock": Math.round(new Date().getTime()/1000)
-        //"coverArt": "../api/?cover&playlist=" + gup("playlist")
+        "pathToApi": "../api"
     };
 
 
@@ -56,7 +55,7 @@ $(document).ready(function()
     {
 
 
-        fetch("../api/?metadata&playlist=" + playlist).then(function (r)
+        fetch(groovebox["pathToApi"] +"/?metadata&playlist="+ playlist).then(function (r)
         {
 
             //  expect a json response
@@ -66,37 +65,37 @@ $(document).ready(function()
         {
 
 
-            //  add metadata to main radio var
-            radio["stream"] = data;
+            //  add metadata to main groovebox var
+            groovebox["stream"] = data;
 
 
 
             //  split the full title into title and artist
-            radio["metadata"] = {
-                "fullTitle": radio["stream"]["track"].replace(/\.[^/.]+$/, "")
+            groovebox["metadata"] = {
+                "fullTitle": groovebox["stream"]["track"].replace(/\.[^/.]+$/, "")
             };
 
 
             //  check for dash " - " within the file name
-            if (radio["metadata"]["fullTitle"].includes(" - "))
+            if (groovebox["metadata"]["fullTitle"].includes(" - "))
             {
 
                 //  split the file name; artist - title
-                radio["metadata"]["title"] = radio["metadata"]["fullTitle"].split(" - ")[1];
-                radio["metadata"]["artist"] = radio["metadata"]["fullTitle"].split(" - ")[0];
+                groovebox["metadata"]["title"] = groovebox["metadata"]["fullTitle"].split(" - ")[1];
+                groovebox["metadata"]["artist"] = groovebox["metadata"]["fullTitle"].split(" - ")[0];
 
             } else
             {
 
                 //  use the full-title as the main title and leave the artist blank
-                radio["metadata"]["title"] = radio["metadata"]["fullTitle"];
-                radio["metadata"]["artist"] = "-";
+                groovebox["metadata"]["title"] = groovebox["metadata"]["fullTitle"];
+                groovebox["metadata"]["artist"] = "-";
 
             }
 
 
             //  add the URl for the cover-art to the metadata
-            radio["metadata"]["coverArt"] = "../api/?cover&playlist=" + radio["playlist"];
+            groovebox["metadata"]["coverArt"] = groovebox["pathToApi"] +"/?cover&playlist="+ groovebox["playlist"];
 
 
 
@@ -113,13 +112,13 @@ $(document).ready(function()
 
 
 
-    //  add the metadata values from the radio var into the user-interface
+    //  add the metadata values from the groovebox var into the user-interface
     function applyMetadata()
     {
 
 
         //  get metadata values
-        var metadata = radio["metadata"];
+        var metadata = groovebox["metadata"];
 
 
         //  get the current audio file name
@@ -127,7 +126,7 @@ $(document).ready(function()
 
 
         //  check if the (new) metadata is different than the currently playing song
-        if (radio["stream"]["track"] !== currentAudioFile)
+        if (groovebox["stream"]["track"] !== currentAudioFile)
         {
 
 
@@ -147,7 +146,7 @@ $(document).ready(function()
 
 
             //  update the current audio file
-            $(".track-info").attr("file", radio["stream"]["track"]);
+            $(".track-info").attr("file", groovebox["stream"]["track"]);
 
 
         }
@@ -194,18 +193,18 @@ $(document).ready(function()
         //  change audio element
         //  set volume to 50%
         //  allow cross origin
-        audio.src = "../api/?stream&playlist="+ radio["playlist"] +"&"+ new Date().getTime();
+        audio.src = groovebox["pathToApi"] +"/?stream&playlist="+ groovebox["playlist"] +"&"+ new Date().getTime();
         audio.volume = 0.5;
         audio.setAttribute("crossorigin", "anonymous");
         audio.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
 
 
-        //  get latest track metadata
-        getStreamData(radio["playlist"]);
-
-
         //  play audio
         togglePlayback();
+
+
+        //  get latest track metadata
+        getStreamData(groovebox["playlist"]);
 
 
     }
@@ -228,6 +227,10 @@ $(document).ready(function()
 
         //  re-fetch the audio stream (a new track should be playing)
         changeAudio();
+
+
+        //  add one to the song counter
+        groovebox["songsPlayed"] += 1;
 
 
     });
@@ -269,19 +272,24 @@ $(document).ready(function()
             //  catch error if the audio fails to start
             if (playPromise !== undefined)
             {
-                playPromise.then(_ => {
-                  // Automatic playback started!
-                  // Show playing UI.
-                  setControlsIcon("pause");
-                  console.log("[Audio] Auto-play started successfully!");
 
-                })
-                .catch(error => {
+                playPromise.then(function (_) {
+
+                    // Automatic playback started!
+                    // Show playing UI.
+                    setControlsIcon("pause");
+                    console.log("[Audio] Audio started successfully!");
+
+                }).catch(function (error)
+                {
+
                     // Auto-play was prevented
                     // Show paused UI.
                     toggleControls("play");
-                    console.error("[Audio] Auto-play was prevented ("+ error +")");
+                    console.error("[Audio] Audio playback was prevented (" + error + ")");
+
                 });
+
             }
 
 

@@ -5,7 +5,7 @@
 
 /*
 
-  https://github.com/Hmerritt/internet-radio
+  https://github.com/Hmerritt/groovebox-player
 
   This file contains functions on extracting the cover-art from a file on the server
   Example usage;
@@ -91,16 +91,34 @@ class CoverArt
 
 
         //  check if track has an album cover
-        if (isset($fileInfo["comments"]["picture"][0]))
+        if (isset($fileInfo["comments"]["picture"][0]["data"]) ||
+            isset($fileInfo["id3v2"]["APIC"][0]["data"]))
         {
 
 
+            //  check which array index exists
+            if (isset($fileInfo["id3v2"]["APIC"][0]["data"]))
+            {
+
+                //  use this index from now on
+                $audioImage = $fileInfo["id3v2"]["APIC"][0];
+
+            } else
+            {
+
+                //  use this index from now on
+                $audioImage = $fileInfo["comments"]["picture"][0];
+
+            }
+
+
+
             //  check for the image type (jpeg/png)
-            if (isset($getID3->info["id3v2"]["APIC"][0]["image_mime"]))
+            if (isset($audioImage["image_mime"]))
             {
 
                 //  if a type exists - use it when creating the content header
-                $mimetype = $getID3->info["id3v2"]["APIC"][0]["image_mime"];
+                $mimetype = $audioImage["image_mime"];
 
             } else
             {
@@ -117,7 +135,7 @@ class CoverArt
 
 
             //  echo the image to the user
-            return $fileInfo["id3v2"]["APIC"][0]["data"];
+            return $audioImage["data"];
 
 
         } else

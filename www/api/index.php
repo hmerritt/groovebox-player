@@ -5,13 +5,13 @@
 
 /*
 
-  https://github.com/Hmerritt/internet-radio
+  https://github.com/Hmerritt/groovebox-player
 
-  This api file acts as the main gateway for all of the internet-radio's
+  This api file acts as the main gateway for all of the groovebox-player's
   functions. Example usage;
 
-  /radio/api/?metadata&mount=disco
-  /radio/api/?stream&mount=disco
+  /groovebox/api/?metadata&mount=disco
+  /groovebox/api/?stream&mount=disco
 
 */
 

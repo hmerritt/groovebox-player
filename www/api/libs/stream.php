@@ -5,7 +5,7 @@
 
 /*
 
-  https://github.com/Hmerritt/internet-radio
+  https://github.com/Hmerritt/groovebox-player
 
   This file contains functions on providing metadata and direct audio stream for the files within a playlist folder.
   Example usage;
@@ -81,7 +81,7 @@ class Stream
 
 
         //  open audio file and output it into the browser
-        echo file_get_contents("../tracks/$playlist/" . $metadata["track"]);
+        echo file_get_contents($this->settings["path_to_tracks"] ."/$playlist/". $metadata["track"]);
 
 
     }
@@ -99,7 +99,7 @@ class Stream
 
 
         //  get directory path for the playlist
-        $playlistDir = "../tracks/$playlist/";
+        $playlistDir = $this->settings["path_to_tracks"] ."/$playlist/";
 
 
 
@@ -214,7 +214,7 @@ class Stream
 
 
         //  get directory path for the playlist
-        $playlistDir = "../tracks/$playlist/";
+        $playlistDir = $this->settings["path_to_tracks"] ."/$playlist/";
 
 
 
@@ -227,7 +227,7 @@ class Stream
         $audioFiles = array_values(
                      array_diff(
                          preg_grep(
-                             '~\.(mp3|aac|wav|ogg)$~', scandir($playlistDir)
+                             '~\.(mp3|aac|wav|ogg|flac)$~', scandir($playlistDir)
                          ),
                          $streamData["played"]
                      )
@@ -305,7 +305,7 @@ class Stream
 
         //  write the new data into _streamdata
         //  if the _streamdata does not exist - it will create it
-        file_put_contents("../tracks/$playlist/_streamdata", json_encode($newStreamData, JSON_PRETTY_PRINT));
+        file_put_contents($this->settings["path_to_tracks"] ."/$playlist/_streamdata", json_encode($newStreamData, JSON_PRETTY_PRINT));
 
 
     }

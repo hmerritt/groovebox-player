@@ -23,7 +23,7 @@ $playlist = $_GET["playlist"];
 ?>
 <!--
 
-https://github.com/Hmerritt/internet-radio
+https://github.com/Hmerritt/groovebox-player
 
   _____                          _
  / ____|                        | |
