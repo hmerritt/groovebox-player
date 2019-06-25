@@ -171,6 +171,21 @@ header.title h1 {
 }
 
 
+@media (max-width: 555px) {
+  header.title {
+    margin-top: 50px;
+    margin-bottom: 60px;
+  }
+}
+
+@media (max-width: 460px) {
+  header.title {
+    margin-top: 40px;
+    margin-bottom: 50px;
+  }
+}
+
+
 
 
 /*  album art  */
@@ -279,6 +294,19 @@ audio {
 .oscilloscope canvas {
   width: 1200px;
   height: 300px;
+}
+
+
+@media (max-width: 460px) {
+  .oscilloscope {
+    top: 180px;
+  }
+}
+
+@media (max-width: 350px) {
+  .oscilloscope {
+    top: 120px;
+  }
 }
 
 

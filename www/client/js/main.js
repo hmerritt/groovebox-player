@@ -35,8 +35,58 @@ $(document).ready(function()
     var groovebox = {
         "playlist": gup("playlist"),
         "songsPlayed": 0,
+        "isBegun": false,
         "pathToApi": "../api"
     };
+
+
+
+
+
+
+
+
+    //  detect if browser allows autoplaying audio
+    function canAutoplay()
+    {
+
+
+        //  IE11 now returns undefined again for window.chrome
+        //  and new Opera 30 outputs true for window.chrome
+        //  but needs to check if window.opr is not undefined
+        //  and new IE Edge outputs to true now for window.chrome
+        //  and if not iOS Chrome check
+        //  so use the below updated condition
+        var isChromium = window.chrome;
+        var winNav = window.navigator;
+        var vendorName = winNav.vendor;
+        var isOpera = typeof window.opr !== "undefined";
+        var isIEedge = winNav.userAgent.indexOf("Edge") > -1;
+        var isIOSChrome = winNav.userAgent.match("CriOS");
+
+
+        //  most browsers allow autoplay
+        var response = true;
+
+
+        //  detect chrome browser
+        if (
+          isChromium !== null &&
+          typeof isChromium !== "undefined" &&
+          vendorName === "Google Inc." &&
+          isOpera === false &&
+          isIEedge === false
+        ) {
+           // is Google Chrome
+           response = false;
+        }
+
+
+        return response;
+
+
+    }
+
 
 
 
@@ -173,16 +223,59 @@ $(document).ready(function()
 
 
 
-    //  create an audio stream container
-    var audioContext = new window.AudioContext();
-
-
-
-
-
     //  setup audio element
     //  set volume to 50%
     var audio = new Audio();
+
+
+
+
+
+    //  define what happens when audio first starts playing
+    function setupAudio()
+    {
+
+
+        //  change has begun to true
+        groovebox["isBegun"] = true;
+
+
+        //  start oscilloscope
+        oscilloscope();
+
+
+    }
+
+
+
+
+    //  detect if browser can start the audioContext with no user interaction
+    //  chrome cannot autoplay audio
+    if (canAutoplay())
+    {
+
+
+        //  create audio context
+        setupAudio();
+
+
+        //  play audio
+        togglePlayback();
+
+
+    } else
+    {
+
+        //  show play button
+        setControlsIcon("play");
+
+
+        //  show audio controls
+        $(".audio-controls").removeClass("hidden");
+
+    }
+
+
 
 
 
@@ -199,10 +292,6 @@ $(document).ready(function()
         audio.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
 
 
-        //  play audio
-        togglePlayback();
-
-
         //  get latest track metadata
         getStreamData(groovebox["playlist"]);
 
@@ -212,7 +301,7 @@ $(document).ready(function()
 
 
 
-    //  start audio on page load
+    //  get audio metadata on page load
     changeAudio();
 
 
@@ -227,6 +316,10 @@ $(document).ready(function()
 
         //  re-fetch the audio stream (a new track should be playing)
         changeAudio();
+
+
+        //  play the new audio
+        togglePlayback();
 
 
         //  add one to the song counter
@@ -252,6 +345,16 @@ $(document).ready(function()
     {
 
 
+        //  check if audio has begun yet
+        if (!groovebox["isBegun"])
+        {
+
+            setupAudio();
+
+        }
+
+
+
         //  check if audio is playing
         if (!audio.paused && audio.duration > 0)
         {
@@ -273,11 +376,13 @@ $(document).ready(function()
             if (playPromise !== undefined)
             {
 
-                playPromise.then(function (_) {
+                playPromise.then(function (_)
+                {
 
                     // Automatic playback started!
                     // Show playing UI.
                     setControlsIcon("pause");
+                    $(".audio-controls").addClass("hidden");
                     console.log("[Audio] Audio started successfully!");
 
                 }).catch(function (error)
@@ -368,20 +473,30 @@ $(document).ready(function()
 
 
 
-
-    //  create source from html5 audio element
-    var source = audioContext.createMediaElementSource(audio);
-
-
-    //  attach oscilloscope
-    var scope = new Oscilloscope(source);
-
-    //  start default animation loop
-    scope.animate(canvas.getContext("2d"));
+    function oscilloscope()
+    {
 
 
-    //  reconnect audio output to speakers
-    source.connect(audioContext.destination);
+        //  create an audio stream container
+        var audioContext = new window.AudioContext();
+
+
+        //  create source from html5 audio element
+        var source = audioContext.createMediaElementSource(audio);
+
+
+        //  attach oscilloscope
+        var scope = new Oscilloscope(source);
+
+        //  start default animation loop
+        scope.animate(canvas.getContext("2d"));
+
+
+        //  reconnect audio output to speakers
+        source.connect(audioContext.destination);
+
+
+    }
 
 
 
