@@ -473,6 +473,9 @@ $(document).ready(function()
 
 
 
+
+    //  initiate the oscilloscope
+    //  ---only run this once---
     function oscilloscope()
     {
 
@@ -498,6 +501,94 @@ $(document).ready(function()
 
     }
 
+
+
+
+    //  calculate the oscilloscopes position on the page
+    function oscilloscopePosition(position)
+    {
+
+
+        //  create obj var to store all object positions
+        //  calculate positions of elements on the page
+        var obj = {
+            "oscilloscope": {
+                "height": $(".oscilloscope").height(),
+                "position": {
+                    "coverArt": {},
+                    "trackInfo": {}
+                }
+            },
+            "coverArt": {
+                "top": $(".album-art").offset()["top"],
+                "height": $(".album-art").height()
+            },
+            "trackInfo": {
+                "top": $(".track-info").offset()["top"],
+                "height": 68
+            }
+        };
+
+
+
+        //  calculate the middle each element
+        obj["coverArt"]["middle"] = obj["coverArt"]["top"] + (obj["coverArt"]["height"] / 2);
+        obj["trackInfo"]["middle"] = obj["trackInfo"]["top"] + (obj["trackInfo"]["height"] / 2);
+
+
+
+        //  calculate correct middle taking into account the height of the 'oscilloscope' element
+        obj["oscilloscope"]["position"]["coverArt"]["middle"] = obj["coverArt"]["middle"] - (obj["oscilloscope"]["height"] / 2);
+
+
+        //  calculate below padding taking into account the height of the 'oscilloscope' element
+        obj["oscilloscope"]["position"]["trackInfo"]["below"] = (obj["trackInfo"]["top"] + obj["trackInfo"]["height"]) - 60;
+
+
+
+        //  check what position to put the oscilloscope
+        //  detect screen width
+        //  if larger than 550 (mobile size)
+        if ($(window).outerWidth() > 550)
+        {
+
+
+            //  place the oscilloscope in the center of the cover-art
+            $(".oscilloscope").css({
+              "top": obj["oscilloscope"]["position"]["coverArt"]["middle"] +"px"
+            });
+
+
+        } else
+        {
+
+
+            //  place the oscilloscope just below the trackInfo
+            $(".oscilloscope").css({
+              "top": obj["oscilloscope"]["position"]["trackInfo"]["below"] +"px"
+            });
+
+
+        }
+
+
+
+    }
+
+
+
+
+    //  calculate oscilloscope's position on page load
+    oscilloscopePosition();
+
+
+    //  re-calculate oscilloscope's position if the screen size changes
+    $(window).resize(function()
+    {
+
+        oscilloscopePosition();
+
+    });
 
 
 

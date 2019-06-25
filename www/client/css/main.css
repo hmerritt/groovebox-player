@@ -282,7 +282,7 @@ header.title h1 {
 
 .oscilloscope {
   position: absolute;
-  top: 220px;
+  top: 215px;
   z-index: -1;
 }
 
@@ -404,4 +404,11 @@ audio {
 .volume .volume-text span {
   vertical-align: sub;
   margin-right: 8px;
+}
+
+
+@media (max-width: 555px) {
+  .volume {
+    display: none;
+  }
 }
