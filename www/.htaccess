@@ -1,0 +1,5 @@
+
+#  clean-up URL
+#  use /pl/your-playlist
+RewriteEngine On
+RewriteRule ^pl/([^/]*)$ client/index.php?playlist=$1 [L]

@@ -41,7 +41,12 @@ https://github.com/Hmerritt/groovebox-player
     <meta name="author" content="https://github.com/Hmerritt" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
+    <!--  title  -->
     <title><?php echo $playlist; ?> - Groovebox</title>
+
+
+    <!--  playlist  -->
+    <playlist id="playlist" content="<?php echo $playlist; ?>"></playlist>
 
 
     <!--  tab icons  -->

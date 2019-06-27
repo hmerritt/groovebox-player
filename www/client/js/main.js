@@ -33,7 +33,7 @@ $(document).ready(function()
     //  set main groovebox var
     //  stores metadata on each mount point
     var groovebox = {
-        "playlist": gup("playlist"),
+        "playlist": $("playlist#playlist").attr("content"),
         "songsPlayed": 0,
         "isBegun": false,
         "pathToApi": "../api"
