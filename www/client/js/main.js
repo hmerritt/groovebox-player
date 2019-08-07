@@ -101,7 +101,7 @@ $(document).ready(function()
 
 
     //  get stream metadata for a specific playlist
-    function getStreamData(playlist)
+    function getStreamData(playlist, isFirst)
     {
 
 
@@ -151,6 +151,11 @@ $(document).ready(function()
 
             //  updata the metadata in the UI
             applyMetadata();
+			
+			
+			//  load and play audio
+			newTrack(isFirst);
+			togglePlayback();
 
 
         });
@@ -279,30 +284,44 @@ $(document).ready(function()
 
 
 
-    function changeAudio()
+    function changeAudio(isFirst="no")
     {
 
 
-        //  change audio element
-        //  set volume to 50%
-        //  allow cross origin
-        audio.src = groovebox["pathToApi"] +"/?stream&playlist="+ groovebox["playlist"] +"&"+ new Date().getTime();
-        audio.volume = 0.5;
-        audio.setAttribute("crossorigin", "anonymous");
-        audio.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
-
-
         //  get latest track metadata
-        getStreamData(groovebox["playlist"]);
+        getStreamData(groovebox["playlist"], isFirst);
 
 
     }
+	
+	
+	
+	
+	function newTrack(isFirst="no")
+	{
+		
+
+		//  change audio element
+		//  set volume to 50%
+		//  allow cross origin
+		audio.src = groovebox["pathToApi"] +"/?stream&playlist="+ groovebox["playlist"] +"&"+ new Date().getTime();
+		audio.setAttribute("crossorigin", "anonymous");
+		audio.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
+		
+		if (isFirst == "yes")
+		{
+			audio.volume = 0.5;
+			updateVolumeBar();
+		}
+
+		
+	}
 
 
 
 
     //  get audio metadata on page load
-    changeAudio();
+    changeAudio(isFirst="yes");
 
 
 
@@ -316,10 +335,6 @@ $(document).ready(function()
 
         //  re-fetch the audio stream (a new track should be playing)
         changeAudio();
-
-
-        //  play the new audio
-        togglePlayback();
 
 
         //  add one to the song counter
