@@ -28,18 +28,11 @@ class Stream
 
 
 
+    private $settings = array();
 
 
-
-
-
-    public function __construct()
+    public function __construct(array $settings)
     {
-
-
-        //  get the user's settings
-        global $settings;
-
 
         //  import the user's settings
         $this->settings = $settings;
@@ -94,7 +87,7 @@ class Stream
 
 
     //  get audio metadata for the currently playing track in a playlist
-    public function metadata($playlist)
+    public function metadata($playlist, $choice = '')
     {
 
 
@@ -122,10 +115,25 @@ class Stream
             //  open the _streamdata and decode it
             $streamData = json_decode(file_get_contents($playlistDir . "_streamdata"), true);
 
-
-            //  get time into current track - in seconds
-            //  add straight into the _streamdata
-            $streamData["stream"]["timeIntoTrack"] = $streamData["stream"]["length"] - ($streamData["stream"]["end"] - time());
+            if ($choice === 'next') {
+                //  reset time into current track - in seconds
+                //  add straight into the _streamdata
+                $streamData["stream"]["timeIntoTrack"] = $streamData["stream"]["length"];
+            } elseif ($choice === 'prev') {
+                //  reset time into current track - in seconds
+                //  add straight into the _streamdata
+                $streamData["stream"]["timeIntoTrack"] = $streamData["stream"]["length"];
+                // new track is the old one
+                $newTrack = $this->select_old_track($playlist,$streamData);
+                if ($newTrack == '') {
+                    // it is the first track, no prev track to play. A new one will be selected
+                    unset($newTrack);
+                }
+            } else {
+                //  get time into current track - in seconds
+                //  add straight into the _streamdata
+                $streamData["stream"]["timeIntoTrack"] = $streamData["stream"]["length"] - ($streamData["stream"]["end"] - time());
+            }
 
 
             //  check if track has already ended
@@ -134,10 +142,10 @@ class Stream
             if ($streamData["stream"]["timeIntoTrack"] > $streamData["stream"]["length"] - 10)
             {
 
-
-                // song has ended; select another track to play
-                $newTrack = $this->select_track($playlist, $streamData);
-
+                if (!isset($newTrack)) {
+                    // song has ended; select another track to play
+                    $newTrack = $this->select_track($playlist, $streamData);
+                }
 
                 //  get the track metadata
                 $trackData = (new getID3)->analyze($playlistDir . $newTrack);
@@ -203,9 +211,21 @@ class Stream
 
 
 
+    //  get audio metadata for the next track to play in a playlist
+    public function next($playlist)
+    {
 
+        return $this->metadata($playlist, 'next');
 
+    }
 
+    //  get audio metadata for the next track to play in a playlist
+    public function prev($playlist)
+    {
+
+        return $this->metadata($playlist, 'prev');
+
+    }
 
 
     //  select another track to play for a specified playlist
@@ -216,11 +236,10 @@ class Stream
         //  get directory path for the playlist
         $playlistDir = $this->settings["path_to_tracks"] ."/$playlist/";
 
-
-
         //  add the last track into the played array
-        $streamData["played"][] = $streamData["stream"]["track"];
-
+        if (!in_array($streamData["stream"]["track"],$streamData["played"])) {
+            $streamData["played"][] = $streamData["stream"]["track"];
+        }
 
         //  search all audio files within the playlist directory
         //  remove all previously played tracks from the scan
@@ -232,11 +251,72 @@ class Stream
                          $streamData["played"]
                      )
                  );
-
-
-
         //  check if array is empty
         if (empty($audioFiles))
+        {
+
+            //  check if played tracks is more than 0
+            //  if true - all tracks have been played
+            //  if false - there are no tracks to play
+            if (count($streamData["played"]) > 1)
+            {
+
+
+                //  reset the _streamdata
+                //  remove unneeded items from the _streamdata
+                unset($streamData["stream"]["timeIntoTrack"]);
+
+
+                //  clear all played tracks
+                //  keep that last played track so it does not play twice by mistake
+                $streamData["played"] = [end($streamData["played"])];
+
+                //  update the _streamdata file with updated values
+                $this->write_streamdata($playlist, $streamData);
+
+
+                //  re-run this function with the updated _streamdata
+                return $this->select_track($playlist, $streamData);
+
+
+            } else
+            {
+
+                return "there are no tracks to play";
+
+            }
+
+
+        }
+
+
+
+        //  get the next track by generating a random number
+        //  use the number as the index for the scanned files
+        return $audioFiles[rand(0, count($audioFiles)-1)];
+
+
+
+        // echo "<pre>"; print_r($newTrack); echo "</pre>";
+
+
+    }
+
+    //  select another track to play for a specified playlist
+    private function select_old_track($playlist, $streamData)
+    {
+
+
+        //  get directory path for the playlist
+        $playlistDir = $this->settings["path_to_tracks"] ."/$playlist/";
+
+
+        //  search all audio files within the playlist directory
+        //  remove all previously played tracks from the scan
+        $audioFiles = array(array_pop($streamData["played"]));
+
+        //  check if array is empty
+        if (empty($audioFiles) || $audioFiles == array(0=>''))
         {
 
 
@@ -269,10 +349,8 @@ class Stream
             {
 
 
-                echo "there are no tracks to play";
-                die();
-
-
+                // there are no tracks to play 
+                return '';
             }
 
 
@@ -280,14 +358,9 @@ class Stream
 
 
 
-        //  get the next track by generating a random number
+        //  get the prev track by generating a random number
         //  use the number as the index for the scanned files
         return $audioFiles[rand(0, sizeof($audioFiles)-1)];
-
-
-
-        echo "<pre>"; print_r($newTrack); echo "</pre>";
-
 
     }
 

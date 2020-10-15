@@ -4,12 +4,24 @@
 $(document).ready(function()
 {
 
-
-
-
-
-
-
+    // Open a new tab more safely than target="__blank"
+    var targetBlank = document.querySelectorAll('.targetBlank');
+    if (targetBlank !== null) {
+        var nb = targetBlank.length;
+        for (var i = 0; i < nb; i++) {
+            targetBlank[i].addEventListener('click', function(evt) { 
+                evt.preventDefault(); 
+                evt.returnValue = false; 
+                openNew(this.href);
+            });
+        }
+    }
+    
+    function openNew(url) {
+        var otherWindow = window.open();
+        otherWindow.opener = null;
+        otherWindow.location = url;
+    }
 
     /*  url parameters  */
 
@@ -62,8 +74,8 @@ $(document).ready(function()
         var vendorName = winNav.vendor;
         var isOpera = typeof window.opr !== "undefined";
         var isIEedge = winNav.userAgent.indexOf("Edge") > -1;
+        var isFirefox = winNav.userAgent.indexOf("Firefox") > -1;
         var isIOSChrome = winNav.userAgent.match("CriOS");
-
 
         //  most browsers allow autoplay
         var response = true;
@@ -78,6 +90,15 @@ $(document).ready(function()
           isIEedge === false
         ) {
            // is Google Chrome
+           response = false;
+        } else if (
+          isFirefox !== null &&
+          typeof isFirefox !== "undefined" &&
+          isIOSChrome === false &&
+          isOpera === false &&
+          isIEedge === false
+        ) {
+           // is Firefox
            response = false;
         }
 
@@ -97,7 +118,50 @@ $(document).ready(function()
 
     /*  metadata  */
 
+    function setStreamData(data) {
 
+        //  add metadata to main groovebox var
+        groovebox["stream"] = data;
+
+
+
+        //  split the full title into title and artist
+        groovebox["metadata"] = {
+            "fullTitle": groovebox["stream"]["track"].replace(/\.[^/.]+$/, "")
+        };
+
+
+        //  check for dash " - " within the file name
+        if (groovebox["metadata"]["fullTitle"].includes(" - "))
+        {
+
+            //  split the file name; artist - title
+            groovebox["metadata"]["title"] = groovebox["metadata"]["fullTitle"].split(" - ")[1];
+            groovebox["metadata"]["artist"] = groovebox["metadata"]["fullTitle"].split(" - ")[0];
+
+        } else
+        {
+
+            //  use the full-title as the main title and leave the artist blank
+            groovebox["metadata"]["title"] = groovebox["metadata"]["fullTitle"];
+            groovebox["metadata"]["artist"] = "-";
+
+        }
+
+
+        //  add the URl for the cover-art to the metadata
+        groovebox["metadata"]["coverArt"] = groovebox["pathToApi"] +"/?cover&playlist="+ groovebox["playlist"];
+
+
+
+        //  updata the metadata in the UI
+        applyMetadata();
+
+
+        //  load and play audio
+        newTrack(isFirst);
+        togglePlayback();
+    }
 
 
     //  get stream metadata for a specific playlist
@@ -114,49 +178,7 @@ $(document).ready(function()
         }).then(function (data)
         {
 
-
-            //  add metadata to main groovebox var
-            groovebox["stream"] = data;
-
-
-
-            //  split the full title into title and artist
-            groovebox["metadata"] = {
-                "fullTitle": groovebox["stream"]["track"].replace(/\.[^/.]+$/, "")
-            };
-
-
-            //  check for dash " - " within the file name
-            if (groovebox["metadata"]["fullTitle"].includes(" - "))
-            {
-
-                //  split the file name; artist - title
-                groovebox["metadata"]["title"] = groovebox["metadata"]["fullTitle"].split(" - ")[1];
-                groovebox["metadata"]["artist"] = groovebox["metadata"]["fullTitle"].split(" - ")[0];
-
-            } else
-            {
-
-                //  use the full-title as the main title and leave the artist blank
-                groovebox["metadata"]["title"] = groovebox["metadata"]["fullTitle"];
-                groovebox["metadata"]["artist"] = "-";
-
-            }
-
-
-            //  add the URl for the cover-art to the metadata
-            groovebox["metadata"]["coverArt"] = groovebox["pathToApi"] +"/?cover&playlist="+ groovebox["playlist"];
-
-
-
-            //  updata the metadata in the UI
-            applyMetadata();
-			
-			
-			//  load and play audio
-			newTrack(isFirst);
-			togglePlayback();
-
+            setStreamData(data);
 
         });
 
@@ -293,13 +315,13 @@ $(document).ready(function()
 
 
     }
-	
-	
-	
-	
+
+
+
+
 	function newTrack(isFirst="no")
 	{
-		
+
 
 		//  change audio element
 		//  set volume to 50%
@@ -307,16 +329,53 @@ $(document).ready(function()
 		audio.src = groovebox["pathToApi"] +"/?stream&playlist="+ groovebox["playlist"] +"&"+ new Date().getTime();
 		audio.setAttribute("crossorigin", "anonymous");
 		audio.setAttribute("allow", "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture");
-		
+
 		if (isFirst == "yes")
 		{
 			audio.volume = 0.5;
 			updateVolumeBar();
 		}
 
-		
+
 	}
 
+    function changeToNextTrack(playlist, isFirst) {
+
+        fetch(groovebox["pathToApi"] +"/?next&playlist="+ playlist).then(function (r)
+        {
+
+            //  expect a json response
+            return r.json();
+
+        }).then(function (data)
+        {
+
+
+            setStreamData(data);
+
+
+        });
+
+    }
+
+    function changeToPrevTrack(playlist, isFirst) {
+
+        fetch(groovebox["pathToApi"] +"/?prev&playlist="+ playlist).then(function (r)
+        {
+
+            //  expect a json response
+            return r.json();
+
+        }).then(function (data)
+        {
+
+
+            setStreamData(data);
+
+
+        });
+
+    }
 
 
 
@@ -331,7 +390,6 @@ $(document).ready(function()
     //  wait for the track to end
     audio.addEventListener("ended", function()
     {
-
 
         //  re-fetch the audio stream (a new track should be playing)
         changeAudio();
@@ -564,7 +622,7 @@ $(document).ready(function()
         //  check what position to put the oscilloscope
         //  detect screen width
         //  if larger than 550 (mobile size)
-        if ($(window).outerWidth() > 550)
+        if ($(window).outerWidth() > 350)
         {
 
 
@@ -728,26 +786,31 @@ $(document).ready(function()
                 togglePlayback();
                 break;
 
-
             //  plus,
             //  up-arrow,
-            //  right-arrow key
             case 187:
             case 38:
-            case 39:
                 e.preventDefault();
                 changeVolume("up");
+                break;
+            //  right-arrow key
+            case 39:
+                e.preventDefault();
+                changeToNextTrack(groovebox["playlist"], isFirst);
                 break;
 
 
             //  minus,
             //  down-arrow,
-            //  left-arrow key
             case 189:
             case 40:
-            case 37:
                 e.preventDefault();
                 changeVolume("down");
+                break;
+            //  left-arrow key
+            case 37:
+                e.preventDefault();
+                changeToPrevTrack(groovebox["playlist"], isFirst);
                 break;
 
 

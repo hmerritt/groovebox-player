@@ -10,8 +10,9 @@
   This api file acts as the main gateway for all of the groovebox-player's
   functions. Example usage;
 
-  /groovebox/api/?metadata&mount=disco
-  /groovebox/api/?stream&mount=disco
+  /groovebox/api/?metadata&playlist=disco
+  /groovebox/api/?stream&playlist=disco
+  /groovebox/api/?next&playlist=disco
 
 */
 
@@ -226,7 +227,7 @@ if (isset($_GET["stream"]))
 
 
         //  init Stream class
-        $stream = new Stream();
+        $stream = new Stream($settings);
 
 
 
@@ -254,9 +255,9 @@ if (isset($_GET["stream"]))
 
 
 
-//  if metadata param exists
+//  if metadata param or next param or prev param exists
 //  get an audio metadata from a specific playlist
-if (isset($_GET["metadata"]))
+if (isset($_GET["metadata"]) || isset($_GET["next"]) || isset($_GET["prev"]))
 {
 
 
@@ -270,17 +271,30 @@ if (isset($_GET["metadata"]))
 
 
         //  init Stream class
-        $metadata = new Stream();
+        $metadata = new Stream($settings);
 
 
         //  set json header - expect a json response
         header("Content-Type: application/json");
 
 
+        if (isset($_GET["metadata"]))
+        {
+            //  get the current song playing
+            die(json_encode($metadata->metadata($_GET["playlist"])));
+        }
 
-        //  get the current song playing
-        die(json_encode($metadata->metadata($_GET["playlist"])));
+        if (isset($_GET["next"]))
+        {
+            //  get the next song to play
+            die(json_encode($metadata->next($_GET["playlist"])));
+        }
 
+        if (isset($_GET["prev"]))
+        {
+            //  get the prev song to play
+            die(json_encode($metadata->prev($_GET["playlist"])));
+        }
 
     } else
     {
@@ -295,10 +309,6 @@ if (isset($_GET["metadata"]))
 
 
 }
-
-
-
-
 
 
 
@@ -320,7 +330,7 @@ if (isset($_GET["coverArt"]) ||
 
 
         //  init Metadata class
-        $coverArt = new CoverArt();
+        $coverArt = new CoverArt($settings);
 
 
         //  echo the cover art

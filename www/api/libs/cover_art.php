@@ -34,21 +34,10 @@ require_once("libs/stream.php");
 //  metadata class to retrieve data from icecast endpoints such as; status-json.xsl
 class CoverArt
 {
+    private $settings = array();
 
-
-
-
-
-
-
-
-    public function __construct()
+    public function __construct(array $settings)
     {
-
-
-        //  get the user's settings
-        global $settings;
-
 
         //  import the user's settings
         $this->settings = $settings;
@@ -56,20 +45,13 @@ class CoverArt
 
     }
 
-
-
-
-
-
-
-
     //  get the cover-art for the currently playing track on a specific playlist
     public function currentlyPlaying($playlist)
     {
 
 
         //  get the currently playing song by loaded latest stream data
-        $currentTrack = (new Stream())->metadata($playlist)["track"];
+        $currentTrack = (new Stream($this->settings))->metadata($playlist)["track"];
 
 
         //  create path from the track name
@@ -84,9 +66,12 @@ class CoverArt
         $fileInfo = $getID3->analyze($filePath);
 
 
+        
 
         //  set a default cover as a fallback
-        $defaultCover = "../client/img/default-cover.png";
+        $defaultCover = array(1,2,3,4,5,6,7);
+        $rand_key = array_rand($defaultCover, 1);
+        $defaultCover = '../client/img/default-cover'. $defaultCover[$rand_key] .'.png';
 
 
 
