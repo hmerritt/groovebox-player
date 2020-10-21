@@ -528,12 +528,30 @@ $(document).ready(function()
 
 
 
+    $(document).on("click", ".icon-prev", function()
+    {
+
+        changeToPrevTrack(groovebox["playlist"], isFirst);
+
+    });
+
+
     $(document).on("click", ".audio-controls", function()
     {
 
         togglePlayback();
 
     });
+
+
+
+    $(document).on("click", ".icon-next", function()
+    {
+
+        changeToNextTrack(groovebox["playlist"], isFirst);
+
+    });
+
 
 
 
