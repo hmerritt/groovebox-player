@@ -95,7 +95,7 @@ https://github.com/Hmerritt/groovebox-player
         <div class="content site-wrap">
             <div class="container">
                 <div class="container-small">
-                    <a href="<?php echo $host;?>logout.php" class="logout"><i class="gg-log-off"></i></a>
+                    <a href="<?php echo $host;?>logout" class="logout"><i class="gg-log-off"></i></a>
 
                     <!--  title  -->
                     <header class="title">
@@ -146,11 +146,20 @@ https://github.com/Hmerritt/groovebox-player
                 <div class="oscilloscope">
                     <canvas id="canvas" width="1200px" height="300"></canvas>
                 </div>
+
                 
             </div>
             <footer>
                 <a href="https://fr.freepik.com/vecteurs/fond" class="targetBlank">Images par défaut créés par kjpargeter/dgim-studio/freepik/Harryarts - fr.freepik.com</a>
             </footer>
+        </div>
+        <div class="tracks-controls">
+            <svg class="icon-next" viewBox="0 0 24 24">
+                <path d="M8,5.14V19.14L19,12.14L8,5.14Z" />
+            </svg>
+            <svg class="icon-prev" viewBox="0 0 24 24">
+                <path d="M8,5.14V19.14L19,12.14L8,5.14Z" />
+            </svg>
         </div>
     </main>
 </body>
