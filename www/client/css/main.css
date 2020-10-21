@@ -134,10 +134,10 @@
 .nav-item a {
   /* non-critical appearance styles */
   display: block;
-  padding: 1em;
+  padding: 0.9em;/*1em;*/
   background: linear-gradient(135deg, rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%);
   color: white;
-  font-size: 1.2em;
+  font-size: 0.9em;/*1.2em;*/
   text-decoration: none;
   transition: color 0.2s, background 0.5s;
 }
@@ -321,10 +321,6 @@ p {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-
-
-
-
 
 
 /*  main page  */
@@ -560,7 +556,41 @@ audio {
   color: #777;
 }
 
+/*  tracks controls  */
 
+.tracks-controls {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  height: 64px;
+  width: 100%;
+  fill:#222222;
+}
+
+.tracks-controls:hover {
+  cursor: pointer;
+}
+
+.tracks-controls .icon-next {
+  position: relative;
+  height: 64px;
+  float: right;
+  opacity: 0.05;
+}
+
+.tracks-controls .icon-prev {
+  margin-left: 0;
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+  position: relative;
+  height: 64px;
+  opacity: 0.05;
+}
+
+.tracks-controls .icon-prev:hover,
+.tracks-controls .icon-next:hover {
+  opacity: 1;
+}
 
 
 /*  volume  */
@@ -654,5 +684,10 @@ footer {
   footer {
   	position:relative;
   	top:-150px;
+  }
+
+  p.sources {
+  	position: relative;
+  	top:80px;
   }
 }
