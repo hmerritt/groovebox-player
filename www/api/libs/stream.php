@@ -152,10 +152,14 @@ class Stream
 
 
                 //  get the length of the new track (in seconds)
-                //  add the last track into the played array
-                //  reset the time-into-track var
                 $newTrackLength = floor($trackData['playtime_seconds']);
-                $streamData["played"][] = $streamData["stream"]["track"];
+                //  add the last track into the played array
+                if ($choice != 'prev') {
+                    $streamData["played"][] = $streamData["stream"]["track"];
+                } else {
+                    array_pop($streamData["played"]);
+                }
+                //  reset the time-into-track var
                 $streamData["stream"]["timeIntoTrack"] = 0;
 
 
@@ -251,9 +255,11 @@ class Stream
                          $streamData["played"]
                      )
                  );
+
         //  check if array is empty
-        if (empty($audioFiles))
+        if (empty($audioFiles) || $audioFiles == array(0=>''))
         {
+
 
             //  check if played tracks is more than 0
             //  if true - all tracks have been played
@@ -269,7 +275,10 @@ class Stream
 
                 //  clear all played tracks
                 //  keep that last played track so it does not play twice by mistake
-                $streamData["played"] = [end($streamData["played"])];
+                $last = end($streamData["played"]);
+                $streamData["played"] = [];
+                $streamData["played"] = [$last];
+
 
                 //  update the _streamdata file with updated values
                 $this->write_streamdata($playlist, $streamData);
@@ -282,7 +291,10 @@ class Stream
             } else
             {
 
-                return "there are no tracks to play";
+
+                echo "there are no tracks to play";
+                die();
+
 
             }
 
@@ -314,7 +326,7 @@ class Stream
         //  search all audio files within the playlist directory
         //  remove all previously played tracks from the scan
         $audioFiles = array(array_pop($streamData["played"]));
-
+        unset($streamData["played"][current(array_keys($streamData["played"],$audioFiles))]);
         //  check if array is empty
         if (empty($audioFiles) || $audioFiles == array(0=>''))
         {
@@ -334,7 +346,9 @@ class Stream
 
                 //  clear all played tracks
                 //  keep that last played track so it does not play twice by mistake
-                $streamData["played"] = [end($streamData["played"])];
+                $last = end($streamData["played"]);
+                $streamData["played"] = [];
+                $streamData["played"] = [$last];
 
 
                 //  update the _streamdata file with updated values
@@ -342,7 +356,7 @@ class Stream
 
 
                 //  re-run this function with the updated _streamdata
-                return $this->select_track($playlist, $streamData);
+                return $this->select_old_track($playlist, $streamData);
 
 
             } else
@@ -354,13 +368,16 @@ class Stream
             }
 
 
+        } else {
+
+            //  update the _streamdata file with updated values
+            $this->write_streamdata($playlist, $streamData);
+
         }
 
 
-
-        //  get the prev track by generating a random number
-        //  use the number as the index for the scanned files
-        return $audioFiles[rand(0, sizeof($audioFiles)-1)];
+        //  get the prev track
+        return $audioFiles[0];
 
     }
 
